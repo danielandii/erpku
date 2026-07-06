@@ -16,7 +16,7 @@ class RoleSeeder extends Seeder
         // ── System Roles ───────────────────────────────────────
         $roles = [
             [
-                'id'          => 'role-super-admin-000000000001',
+                'id'          => '11111111-1111-1111-1111-000000000001',
                 'tenant_id'   => null,           // Global, tidak terikat tenant
                 'name'        => 'Super Admin',
                 'slug'        => 'super_admin',
@@ -24,7 +24,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-admin-tenant-000000000002',
+                'id'          => '11111111-1111-1111-1111-000000000002',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Admin',
                 'slug'        => 'admin',
@@ -32,7 +32,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-hr-manager-00000000000003',
+                'id'          => '11111111-1111-1111-1111-000000000003',
                 'tenant_id'   => $tenantId,
                 'name'        => 'HR Manager',
                 'slug'        => 'hr_manager',
@@ -40,7 +40,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-finance-manager-000000004',
+                'id'          => '11111111-1111-1111-1111-000000000004',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Finance Manager',
                 'slug'        => 'finance_manager',
@@ -48,7 +48,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-sales-manager-0000000005',
+                'id'          => '11111111-1111-1111-1111-000000000005',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Sales Manager',
                 'slug'        => 'sales_manager',
@@ -56,7 +56,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-project-manager-000000006',
+                'id'          => '11111111-1111-1111-1111-000000000006',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Project Manager',
                 'slug'        => 'project_manager',
@@ -64,7 +64,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-staff-general-0000000007',
+                'id'          => '11111111-1111-1111-1111-000000000007',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Staff',
                 'slug'        => 'staff',
@@ -72,7 +72,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-viewer-readonly-000000008',
+                'id'          => '11111111-1111-1111-1111-000000000008',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Viewer',
                 'slug'        => 'viewer',
@@ -93,7 +93,7 @@ class RoleSeeder extends Seeder
         $allPerms = DB::table('permissions')->pluck('id', 'name');
 
         // Super Admin: semua permission
-        $superAdminPermsId = 'role-super-admin-000000000001';
+        $superAdminPermsId = '11111111-1111-1111-1111-000000000001';
         $this->assignPermissions($superAdminPermsId, $allPerms->values()->toArray());
 
         // HR Manager: semua permission HRD + read user
@@ -101,26 +101,26 @@ class RoleSeeder extends Seeder
             str_starts_with($name, 'hrd.') ||
             in_array($name, ['user.users.read'])
         )->values()->toArray();
-        $this->assignPermissions('role-hr-manager-00000000000003', $hrPerms);
+        $this->assignPermissions('11111111-1111-1111-1111-000000000003', $hrPerms);
 
         // Finance Manager: semua permission Finance + read clients + read users
         $financePerms = $allPerms->filter(fn($id, $name) =>
             str_starts_with($name, 'finance.') ||
             in_array($name, ['marketing.clients.read', 'marketing.quotations.read', 'user.users.read'])
         )->values()->toArray();
-        $this->assignPermissions('role-finance-manager-000000004', $financePerms);
+        $this->assignPermissions('11111111-1111-1111-1111-000000000004', $financePerms);
 
         // Sales Manager: semua permission Marketing
         $salesPerms = $allPerms->filter(fn($id, $name) =>
             str_starts_with($name, 'marketing.')
         )->values()->toArray();
-        $this->assignPermissions('role-sales-manager-0000000005', $salesPerms);
+        $this->assignPermissions('11111111-1111-1111-1111-000000000005', $salesPerms);
 
         // Project Manager: semua permission Project
         $projectPerms = $allPerms->filter(fn($id, $name) =>
             str_starts_with($name, 'project.')
         )->values()->toArray();
-        $this->assignPermissions('role-project-manager-000000006', $projectPerms);
+        $this->assignPermissions('11111111-1111-1111-1111-000000000006', $projectPerms);
 
         // Staff: hanya create attendance, create leave, read task
         $staffPerms = $allPerms->filter(fn($id, $name) =>
@@ -135,13 +135,13 @@ class RoleSeeder extends Seeder
                 'project.time_logs.read',
             ])
         )->values()->toArray();
-        $this->assignPermissions('role-staff-general-0000000007', $staffPerms);
+        $this->assignPermissions('11111111-1111-1111-1111-000000000007', $staffPerms);
 
         // Viewer: hanya read permission
         $viewerPerms = $allPerms->filter(fn($id, $name) =>
             str_ends_with($name, '.read')
         )->values()->toArray();
-        $this->assignPermissions('role-viewer-readonly-000000008', $viewerPerms);
+        $this->assignPermissions('11111111-1111-1111-1111-000000000008', $viewerPerms);
 
         $this->command->info('✓ Roles & permissions seeded.');
     }

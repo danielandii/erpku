@@ -16,7 +16,7 @@ class EmployeeSeeder extends Seeder
         $employees = [
             [
                 'id'              => 'emp-rizky-000000000000000001',
-                'user_id'         => 'user-super-admin-00000000000001',
+                'user_id'         => '22222222-2222-2222-2222-00000000000001',
                 'employee_number' => 'MJ-001',
                 'full_name'       => 'Rizky Kurniawan',
                 'gender'          => 'male',
@@ -30,7 +30,7 @@ class EmployeeSeeder extends Seeder
             ],
             [
                 'id'              => 'emp-sari-000000000000000000002',
-                'user_id'         => 'user-hr-manager-000000000000002',
+                'user_id'         => '22222222-2222-2222-2222-00000000000002',
                 'employee_number' => 'MJ-002',
                 'full_name'       => 'Sari Andini',
                 'gender'          => 'female',
@@ -44,7 +44,7 @@ class EmployeeSeeder extends Seeder
             ],
             [
                 'id'              => 'emp-maya-000000000000000000003',
-                'user_id'         => 'user-finance-manager-00000000003',
+                'user_id'         => '22222222-2222-2222-2222-00000000000003',
                 'employee_number' => 'MJ-003',
                 'full_name'       => 'Maya Rahayu',
                 'gender'          => 'female',
@@ -58,7 +58,7 @@ class EmployeeSeeder extends Seeder
             ],
             [
                 'id'              => 'emp-dewi-000000000000000000004',
-                'user_id'         => 'user-sales-manager-000000000004',
+                'user_id'         => '22222222-2222-2222-2222-000000000004',
                 'employee_number' => 'MJ-004',
                 'full_name'       => 'Dewi Wulandari',
                 'gender'          => 'female',
@@ -72,7 +72,7 @@ class EmployeeSeeder extends Seeder
             ],
             [
                 'id'              => 'emp-ahmad-00000000000000000005',
-                'user_id'         => 'user-project-manager-0000000005',
+                'user_id'         => '22222222-2222-2222-2222-00000000000005',
                 'employee_number' => 'MJ-005',
                 'full_name'       => 'Ahmad Hidayat',
                 'gender'          => 'male',
@@ -86,7 +86,7 @@ class EmployeeSeeder extends Seeder
             ],
             [
                 'id'              => 'emp-budi-000000000000000000006',
-                'user_id'         => 'user-staff-finance-00000000000006',
+                'user_id'         => '22222222-2222-2222-2222-00000000000006',
                 'employee_number' => 'MJ-006',
                 'full_name'       => 'Budi Santoso',
                 'gender'          => 'male',
@@ -100,7 +100,7 @@ class EmployeeSeeder extends Seeder
             ],
             [
                 'id'              => 'emp-fauzan-0000000000000000007',
-                'user_id'         => 'user-staff-sales-000000000000007',
+                'user_id'         => '22222222-2222-2222-2222-000000000000007',
                 'employee_number' => 'MJ-007',
                 'full_name'       => 'Fauzan Hidayat',
                 'gender'          => 'male',
@@ -144,7 +144,7 @@ class EmployeeSeeder extends Seeder
                     ['name' => 'BPJS Kesehatan (4%)', 'type' => 'employer',  'amount' => round($baseSalary * 0.04), 'is_taxable' => false, 'is_fixed' => true],
                     ['name' => 'BPJS TK JHT (3.7%)', 'type' => 'employer',  'amount' => round($baseSalary * 0.037),'is_taxable' => false, 'is_fixed' => true],
                 ]),
-                'created_by'     => 'user-super-admin-00000000000001',
+                'created_by'     => '22222222-2222-2222-2222-00000000000001',
                 'created_at'     => $now,
                 'updated_at'     => $now,
             ]);
