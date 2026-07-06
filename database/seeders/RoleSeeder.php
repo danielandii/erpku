@@ -149,7 +149,7 @@ class RoleSeeder extends Seeder
     private function assignPermissions(string $roleId, array $permissionIds): void
     {
         // Ambil user ID default untuk granted_by (akan diisi setelah UserSeeder)
-        $grantedBy = '11111111-1111-1111-1111-00000000000001';
+        $grantedBy = '11111111-1111-1111-1111-000000000001';
         $now       = now();
 
         $rows = array_map(fn($permId) => [
