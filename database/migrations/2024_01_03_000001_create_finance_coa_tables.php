@@ -3,63 +3,55 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        // ── Chart of Accounts (COA) ────────────────────────────
+        // Buat tabel tanpa self-referential FK dulu
         Schema::create('chart_of_accounts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->string('code', 20)->comment('Kode akun: 1110, 4010, 6020');
+            $table->uuid('tenant_id')->index();
+            $table->string('code', 20)->index();
             $table->string('name');
-            $table->string('account_type', 30)
-                  ->comment('asset | liability | equity | revenue | cogs | expense | other_revenue | other_expense');
-            $table->string('normal_balance', 10)->comment('debit | credit — Saldo normal akun ini');
-            $table->uuid('parent_id')->nullable()->comment('Self-reference untuk hierarki COA');
-            $table->unsignedSmallInteger('level')->default(1)
-                  ->comment('1=kelompok | 2=subkelompok | 3=akun detail');
-            $table->boolean('is_detail')->default(true)
-                  ->comment('Hanya akun detail (level 3) yang bisa diposting');
-            $table->boolean('is_cash_account')->default(false)
-                  ->comment('Menandai akun ini adalah kas/bank untuk arus kas');
-            $table->text('description')->nullable();
+            $table->enum('account_type', [
+                'asset', 'liability', 'equity',
+                'revenue', 'cogs', 'expense',
+                'other_revenue', 'other_expense',
+            ]);
+            $table->enum('normal_balance', ['debit', 'credit']);
+            $table->integer('level')->default(1);
+            $table->boolean('is_detail')->default(true);
+            $table->boolean('is_cash_account')->default(false);
             $table->boolean('is_active')->default(true);
+            $table->text('description')->nullable();
+            // parent_id sebagai kolom biasa dulu, FK ditambah setelah tabel selesai
+            $table->uuid('parent_id')->nullable()->index();
+            $table->uuid('created_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->unique(['tenant_id', 'code']);
-            $table->foreign('parent_id')->references('id')->on('chart_of_accounts')->nullOnDelete();
-            $table->index('tenant_id');
-            $table->index('account_type');
-            $table->index('is_detail');
         });
 
-        // ── Bank / Kas Accounts ────────────────────────────────
-        Schema::create('bank_accounts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignUuid('coa_id')->constrained('chart_of_accounts')->restrictOnDelete()
-                  ->comment('Akun GL yang merepresentasikan rekening ini (akun kas/bank)');
-            $table->string('bank_name', 100)->comment('BCA | Mandiri | BNI | BRI | BSI');
-            $table->string('account_number', 50)->unique();
-            $table->string('account_name')->comment('Nama pemegang rekening sesuai buku tabungan');
-            $table->string('account_type', 20)->comment('giro | savings | petty_cash');
-            $table->string('currency', 10)->default('IDR');
-            $table->decimal('current_balance', 18, 2)->default(0)
-                  ->comment('Saldo saat ini (update otomatis saat ada transaksi)');
-            $table->string('branch', 100)->nullable()->comment('Nama cabang bank');
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_default')->default(false)->comment('Rekening default untuk penerimaan');
-            $table->timestamps();
-
-            $table->index('tenant_id');
-        });
+        // Tambah self-referential FK setelah tabel & primary key sudah ada
+        DB::statement('
+            ALTER TABLE chart_of_accounts
+            ADD CONSTRAINT chart_of_accounts_parent_id_foreign
+            FOREIGN KEY (parent_id)
+            REFERENCES chart_of_accounts (id)
+            ON DELETE SET NULL
+            DEFERRABLE INITIALLY DEFERRED
+        ');
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('bank_accounts');
+        DB::statement('
+            ALTER TABLE chart_of_accounts
+            DROP CONSTRAINT IF EXISTS chart_of_accounts_parent_id_foreign
+        ');
         Schema::dropIfExists('chart_of_accounts');
     }
 };

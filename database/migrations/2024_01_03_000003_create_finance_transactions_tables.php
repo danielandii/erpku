@@ -3,135 +3,143 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        // ── Bills / Hutang Vendor (Accounts Payable) ───────────
-        Schema::create('bills', function (Blueprint $table) {
+        // ── Journal Entries ───────────────────────────────────────────────────
+        Schema::create('journal_entries', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->string('bill_number', 30)->unique()->comment('Auto-generated: BILL-2024-0001');
-            $table->string('vendor_name')->comment('Nama vendor / supplier');
-            $table->string('vendor_invoice_number', 100)->nullable()->comment('Nomor invoice dari vendor');
-            $table->date('bill_date');
-            $table->date('due_date');
-            $table->text('description');
-            $table->foreignUuid('coa_id')->constrained('chart_of_accounts')->restrictOnDelete()
-                  ->comment('Akun beban/aset terkait (misal: Beban Sewa, Beban Utilitas)');
-            $table->decimal('amount', 18, 2)->comment('Total tagihan dari vendor');
-            $table->decimal('paid_amount', 18, 2)->default(0);
-            $table->string('status', 20)->default('unpaid')
-                  ->comment('unpaid | partial | paid | overdue | cancelled');
-            $table->string('attachment_url', 500)->nullable()->comment('Scan / foto tagihan vendor');
-            $table->text('notes')->nullable();
-            $table->foreignUuid('approved_by')->nullable()->constrained('users')->nullOnDelete()
-                  ->comment('Pengeluaran besar memerlukan approval');
-            $table->timestamp('approved_at')->nullable();
-            $table->foreignUuid('created_by')->constrained('users')->restrictOnDelete();
+            $table->uuid('tenant_id')->index();
+            $table->string('entry_number', 30)->unique();
+            $table->string('type', 50)->default('manual');
+            $table->string('description');
+            $table->date('entry_date');
+            $table->smallInteger('period_year');
+            $table->tinyInteger('period_month');
+            $table->decimal('total_debit', 20, 2)->default(0);
+            $table->decimal('total_credit', 20, 2)->default(0);
+            $table->boolean('is_balanced')->default(false);
+            $table->boolean('is_posted')->default(false);
+            $table->timestamp('posted_at')->nullable();
+            $table->uuid('posted_by')->nullable();
+            $table->boolean('is_reversed')->default(false);
+            $table->uuid('reversed_by_entry_id')->nullable();
+            $table->text('reversal_reason')->nullable();
+            // source polymorphic
+            $table->string('source_type', 50)->nullable();
+            $table->uuid('source_id')->nullable()->index();
+            $table->uuid('created_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('tenant_id');
-            $table->index('status');
-            $table->index('due_date');
+            $table->index(['tenant_id', 'period_year', 'period_month']);
         });
 
-        // ── Payments (Pembayaran Masuk & Keluar) ──────────────
-        Schema::create('payments', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->string('payment_number', 30)->unique()->comment('Auto-generated: PAY-2024-0001');
-            $table->string('type', 20)->comment('inbound (dari klien) | outbound (ke vendor/pihak lain)');
-            $table->foreignUuid('invoice_id')->nullable()->constrained('invoices')->nullOnDelete()
-                  ->comment('Referensi invoice untuk pembayaran inbound');
-            $table->foreignUuid('bill_id')->nullable()->constrained('bills')->nullOnDelete()
-                  ->comment('Referensi bill untuk pembayaran outbound ke vendor');
-            $table->foreignUuid('client_id')->nullable()->constrained('clients')->nullOnDelete();
-            $table->string('vendor_name')->nullable()->comment('Nama penerima jika bukan client');
-            $table->date('payment_date');
-            $table->decimal('amount', 18, 2);
-            $table->string('payment_method', 30)
-                  ->comment('bank_transfer | cash | check | giro | qris | virtual_account | credit_card');
-            $table->string('reference_number', 100)->nullable()->comment('Nomor referensi / kode transfer bank');
-            $table->foreignUuid('bank_account_id')->nullable()->constrained('bank_accounts')->nullOnDelete()
-                  ->comment('Akun bank/kas yang menerima atau mengirim dana');
-            $table->text('notes')->nullable();
-            $table->string('attachment_url', 500)->nullable()->comment('Bukti transfer / kwitansi');
-            $table->uuid('journal_entry_id')->nullable()->comment('FK ke journal_entries, di-set setelah jurnal dibuat');
-            $table->foreignUuid('created_by')->constrained('users')->restrictOnDelete();
-            $table->timestamps();
-
-            $table->index('tenant_id');
-            $table->index('invoice_id');
-            $table->index('bill_id');
-            $table->index('payment_date');
-            $table->index('type');
-        });
-
-        // ── Journal Entries (Jurnal Umum) ──────────────────────
-        Schema::create('journal_entries', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->string('entry_number', 30)->unique()->comment('Auto-generated: JNL-2024-0001');
-            $table->string('type', 30)
-                  ->comment('manual | invoice | credit_note | payment | bill | payroll | adjustment | closing');
-            $table->string('reference_type', 50)->nullable()
-                  ->comment('Polymorphic: Invoice | Payment | Bill | PayrollPeriod');
-            $table->uuid('reference_id')->nullable()->comment('ID dari record referensi (polymorphic)');
-            $table->text('description');
-            $table->date('entry_date')->index();
-            $table->unsignedSmallInteger('period_year');
-            $table->unsignedSmallInteger('period_month');
-            $table->decimal('total_debit', 18, 2);
-            $table->decimal('total_credit', 18, 2);
-            $table->boolean('is_posted')->default(false)
-                  ->comment('Setelah posted, jurnal masuk ke General Ledger');
-            $table->timestamp('posted_at')->nullable();
-            $table->foreignUuid('posted_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->boolean('is_reversed')->default(false);
-            $table->uuid('reversed_by_entry_id')->nullable()
-                  ->comment('ID jurnal reverse (jika entry ini sudah di-reverse)');
-            $table->foreignUuid('created_by')->constrained('users')->restrictOnDelete();
-            $table->timestamps();
-
-            $table->foreign('reversed_by_entry_id')->references('id')->on('journal_entries')->nullOnDelete();
-            $table->index('tenant_id');
-            $table->index('reference_type');
-            $table->index('reference_id');
-            $table->index(['period_year', 'period_month']);
-        });
-
-        // ── Journal Lines (Baris Debit/Kredit) ────────────────
+        // ── Journal Lines ─────────────────────────────────────────────────────
         Schema::create('journal_lines', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('journal_entry_id')->constrained('journal_entries')->cascadeOnDelete();
-            $table->foreignUuid('coa_id')->constrained('chart_of_accounts')->restrictOnDelete();
+            $table->uuid('journal_entry_id')->index();
+            $table->uuid('coa_id')->index();
+            $table->string('coa_code', 20)->nullable();
+            $table->string('coa_name')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('debit_amount', 18, 2)->default(0);
-            $table->decimal('credit_amount', 18, 2)->default(0);
-            $table->unsignedSmallInteger('sequence');
+            $table->decimal('debit_amount', 20, 2)->default(0);
+            $table->decimal('credit_amount', 20, 2)->default(0);
+            $table->integer('sequence')->default(0);
             $table->timestamps();
 
-            $table->index('journal_entry_id');
-            $table->index('coa_id');
+            $table->foreign('journal_entry_id')
+                ->references('id')->on('journal_entries')
+                ->onDelete('cascade');
+
+            $table->foreign('coa_id')
+                ->references('id')->on('chart_of_accounts')
+                ->onDelete('restrict');
         });
 
-        // FK deferred: payments.journal_entry_id → journal_entries.id
-        Schema::table('payments', function (Blueprint $table) {
-            $table->foreign('journal_entry_id')->references('id')->on('journal_entries')->nullOnDelete();
+        // ── Bills (Hutang / AP) ───────────────────────────────────────────────
+        Schema::create('bills', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id')->index();
+            $table->string('bill_number', 30)->unique();
+            $table->string('vendor_name');
+            $table->string('vendor_invoice_number', 60)->nullable();
+            $table->date('bill_date');
+            $table->date('due_date');
+            $table->text('description');
+            $table->uuid('coa_id')->nullable();
+            $table->decimal('amount', 20, 2)->default(0);
+            $table->decimal('paid_amount', 20, 2)->default(0);
+            $table->decimal('remaining_amount', 20, 2)->default(0);
+            $table->enum('status', [
+                'unpaid', 'partial', 'paid', 'overdue', 'cancelled',
+            ])->default('unpaid');
+            $table->string('attachment_url')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->uuid('approved_by')->nullable();
+            $table->uuid('journal_entry_id')->nullable();
+            $table->uuid('created_by')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('coa_id')
+                ->references('id')->on('chart_of_accounts')
+                ->onDelete('set null');
+
+            $table->foreign('journal_entry_id')
+                ->references('id')->on('journal_entries')
+                ->onDelete('set null');
+        });
+
+        // ── Payments ──────────────────────────────────────────────────────────
+        Schema::create('payments', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id')->index();
+            $table->string('payment_number', 30)->unique();
+            $table->enum('type', ['inbound', 'outbound'])->default('inbound');
+            $table->uuid('invoice_id')->nullable()->index();
+            $table->uuid('bill_id')->nullable()->index();
+            $table->uuid('client_id')->nullable()->index();
+            $table->string('vendor_name')->nullable();
+            $table->uuid('bank_account_id')->nullable();
+            $table->date('payment_date');
+            $table->decimal('amount', 20, 2);
+            $table->string('payment_method', 50)->default('bank_transfer');
+            $table->string('reference_number', 100)->nullable();
+            $table->text('notes')->nullable();
+            $table->string('attachment_url')->nullable();
+            $table->uuid('journal_entry_id')->nullable();
+            $table->uuid('created_by')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('invoice_id')
+                ->references('id')->on('invoices')
+                ->onDelete('set null');
+
+            $table->foreign('bill_id')
+                ->references('id')->on('bills')
+                ->onDelete('set null');
+
+            $table->foreign('bank_account_id')
+                ->references('id')->on('bank_accounts')
+                ->onDelete('set null');
+
+            $table->foreign('journal_entry_id')
+                ->references('id')->on('journal_entries')
+                ->onDelete('set null');
         });
     }
 
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropForeign(['journal_entry_id']);
-        });
-        Schema::dropIfExists('journal_lines');
-        Schema::dropIfExists('journal_entries');
         Schema::dropIfExists('payments');
         Schema::dropIfExists('bills');
+        Schema::dropIfExists('journal_lines');
+        Schema::dropIfExists('journal_entries');
     }
 };
