@@ -15,12 +15,12 @@ class DepartmentPositionSeeder extends Seeder
 
         // ── Departments ────────────────────────────────────────
         $departments = [
-            ['id' => 'dept-it-00000000000000000001', 'name' => 'Information Technology', 'code' => 'IT'],
-            ['id' => 'dept-hrd-0000000000000000002', 'name' => 'Human Resource & Development', 'code' => 'HRD'],
-            ['id' => 'dept-fin-0000000000000000003', 'name' => 'Finance & Accounting', 'code' => 'FIN'],
-            ['id' => 'dept-mkt-0000000000000000004', 'name' => 'Marketing & Sales', 'code' => 'MKT'],
-            ['id' => 'dept-ops-0000000000000000005', 'name' => 'Operations', 'code' => 'OPS'],
-            ['id' => 'dept-prj-0000000000000000006', 'name' => 'Project Management Office', 'code' => 'PMO'],
+            ['id' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'Information Technology', 'code' => 'IT'],
+            ['id' => '33333333-3333-3333-3333-0000000000000000002', 'name' => 'Human Resource & Development', 'code' => 'HRD'],
+            ['id' => '33333333-3333-3333-3333-0000000000000000003', 'name' => 'Finance & Accounting', 'code' => 'FIN'],
+            ['id' => '33333333-3333-3333-3333-0000000000000000004', 'name' => 'Marketing & Sales', 'code' => 'MKT'],
+            ['id' => '33333333-3333-3333-3333-0000000000000000005', 'name' => 'Operations', 'code' => 'OPS'],
+            ['id' => '33333333-3333-3333-3333-0000000000000000006', 'name' => 'Project Management Office', 'code' => 'PMO'],
         ];
 
         foreach ($departments as $dept) {
@@ -35,7 +35,7 @@ class DepartmentPositionSeeder extends Seeder
         // ── Work Schedules ─────────────────────────────────────
         $schedules = [
             [
-                'id'                    => 'sched-reguler-000000000001',
+                'id'                    => '44444444-4444-4444-4444-000000000001',
                 'name'                  => 'Reguler (Senin-Jumat)',
                 'work_days'             => json_encode([1, 2, 3, 4, 5]),
                 'check_in_time'         => '08:00:00',
@@ -44,7 +44,7 @@ class DepartmentPositionSeeder extends Seeder
                 'break_duration_minutes'=> 60,
             ],
             [
-                'id'                    => 'sched-shift-pagi-0000000002',
+                'id'                    => '44444444-4444-4444-4444-0000000002',
                 'name'                  => 'Shift Pagi (06:00-14:00)',
                 'work_days'             => json_encode([1, 2, 3, 4, 5, 6]),
                 'check_in_time'         => '06:00:00',
@@ -53,7 +53,7 @@ class DepartmentPositionSeeder extends Seeder
                 'break_duration_minutes'=> 30,
             ],
             [
-                'id'                    => 'sched-shift-malam-000000003',
+                'id'                    => '44444444-4444-4444-4444-000000003',
                 'name'                  => 'Shift Malam (22:00-06:00)',
                 'work_days'             => json_encode([1, 2, 3, 4, 5, 6]),
                 'check_in_time'         => '22:00:00',
@@ -75,24 +75,24 @@ class DepartmentPositionSeeder extends Seeder
         // ── Positions ──────────────────────────────────────────
         $positions = [
             // IT
-            ['id' => 'pos-it-director-000000000001', 'dept' => 'dept-it-00000000000000000001', 'name' => 'IT Director',       'level' => 'Director'],
-            ['id' => 'pos-fullstack-dev-0000000002', 'dept' => 'dept-it-00000000000000000001', 'name' => 'Fullstack Developer','level' => 'Staff'],
-            ['id' => 'pos-devops-eng-00000000000003','dept' => 'dept-it-00000000000000000001', 'name' => 'DevOps Engineer',   'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-000000000001', 'dept' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'IT Director',       'level' => 'Director'],
+            ['id' => '55555555-5555-5555-5555-0000000002', 'dept' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'Fullstack Developer','level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-00000000000003','dept' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'DevOps Engineer',   'level' => 'Staff'],
             // HRD
-            ['id' => 'pos-hr-manager-000000000004',  'dept' => 'dept-hrd-0000000000000000002', 'name' => 'HR Manager',        'level' => 'Manager'],
-            ['id' => 'pos-hr-staff-0000000000000005','dept' => 'dept-hrd-0000000000000000002', 'name' => 'HR Staff',          'level' => 'Staff'],
-            ['id' => 'pos-recruitment-00000000000006','dept'=> 'dept-hrd-0000000000000000002', 'name' => 'Recruitment Staff', 'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-000000000004',  'dept' => '33333333-3333-3333-3333-0000000000000000002', 'name' => 'HR Manager',        'level' => 'Manager'],
+            ['id' => '55555555-5555-5555-5555-0000000000000005','dept' => '33333333-3333-3333-3333-0000000000000000002', 'name' => 'HR Staff',          'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-00000000000006','dept'=> '33333333-3333-3333-3333-0000000000000000002', 'name' => 'Recruitment Staff', 'level' => 'Staff'],
             // Finance
-            ['id' => 'pos-fin-manager-00000000000007','dept'=> 'dept-fin-0000000000000000003', 'name' => 'Finance Manager',   'level' => 'Manager'],
-            ['id' => 'pos-accountant-0000000000000008','dept'=>'dept-fin-0000000000000000003', 'name' => 'Accountant',        'level' => 'Staff'],
-            ['id' => 'pos-tax-staff-000000000000009', 'dept'=>'dept-fin-0000000000000000003', 'name' => 'Tax Staff',         'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-00000000000007','dept'=> '33333333-3333-3333-3333-0000000000000000003', 'name' => 'Finance Manager',   'level' => 'Manager'],
+            ['id' => '55555555-5555-5555-5555-0000000000000008','dept'=>'33333333-3333-3333-3333-0000000000000000003', 'name' => 'Accountant',        'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-000000000000009', 'dept'=>'33333333-3333-3333-3333-0000000000000000003', 'name' => 'Tax Staff',         'level' => 'Staff'],
             // Marketing
-            ['id' => 'pos-sales-manager-0000000000010','dept'=>'dept-mkt-0000000000000000004','name' => 'Sales Manager',      'level' => 'Manager'],
-            ['id' => 'pos-sales-exec-000000000000011', 'dept'=>'dept-mkt-0000000000000000004','name' => 'Sales Executive',    'level' => 'Staff'],
-            ['id' => 'pos-mkt-specialist-000000000012','dept'=>'dept-mkt-0000000000000000004','name' => 'Marketing Specialist','level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-0000000000010','dept'=>'33333333-3333-3333-3333-0000000000000000004','name' => 'Sales Manager',      'level' => 'Manager'],
+            ['id' => '55555555-5555-5555-5555-000000000000011', 'dept'=>'33333333-3333-3333-3333-0000000000000000004','name' => 'Sales Executive',    'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-000000000012','dept'=>'33333333-3333-3333-3333-0000000000000000004','name' => 'Marketing Specialist','level' => 'Staff'],
             // PMO
-            ['id' => 'pos-pm-000000000000000000013',  'dept'=>'dept-prj-0000000000000000006', 'name' => 'Project Manager',   'level' => 'Manager'],
-            ['id' => 'pos-ba-000000000000000000014',  'dept'=>'dept-prj-0000000000000000006', 'name' => 'Business Analyst',  'level' => 'Staff'],
+            ['id' => '55555555-5555-5555-5555-000000000000000000013',  'dept'=>'33333333-3333-3333-3333-0000000000000000006', 'name' => 'Project Manager',   'level' => 'Manager'],
+            ['id' => '55555555-5555-5555-5555-000000000000000000014',  'dept'=>'33333333-3333-3333-3333-0000000000000000006', 'name' => 'Business Analyst',  'level' => 'Staff'],
         ];
 
         foreach ($positions as $pos) {

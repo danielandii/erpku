@@ -22,8 +22,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'male',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K1',
-                'department_id'   => 'dept-it-00000000000000000001',
-                'position_id'     => 'pos-it-director-000000000001',
+                'department_id'   => '33333333-3333-3333-3333-00000000000000000001',
+                'position_id'     => '55555555-5555-5555-5555-000000000001',
                 'join_date'       => '2019-01-02',
                 'employment_type' => 'permanent',
                 'base_salary'     => 15000000,
@@ -36,8 +36,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'female',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K0',
-                'department_id'   => 'dept-hrd-0000000000000000002',
-                'position_id'     => 'pos-hr-manager-000000000004',
+                'department_id'   => '33333333-3333-3333-3333-0000000000000000002',
+                'position_id'     => '55555555-5555-5555-5555-000000000004',
                 'join_date'       => '2020-01-06',
                 'employment_type' => 'permanent',
                 'base_salary'     => 8000000,
@@ -50,8 +50,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'female',
                 'marital_status'  => 'single',
                 'num_dependants'  => 'TK0',
-                'department_id'   => 'dept-fin-0000000000000000003',
-                'position_id'     => 'pos-fin-manager-00000000000007',
+                'department_id'   => '33333333-3333-3333-3333-0000000000000000003',
+                'position_id'     => '55555555-5555-5555-5555-00000000000007',
                 'join_date'       => '2019-03-01',
                 'employment_type' => 'permanent',
                 'base_salary'     => 9000000,
@@ -64,8 +64,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'female',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K2',
-                'department_id'   => 'dept-mkt-0000000000000000004',
-                'position_id'     => 'pos-sales-manager-0000000000010',
+                'department_id'   => '33333333-3333-3333-3333-0000000000000000004',
+                'position_id'     => '55555555-5555-5555-5555-0000000000010',
                 'join_date'       => '2021-06-01',
                 'employment_type' => 'permanent',
                 'base_salary'     => 7500000,
@@ -78,8 +78,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'male',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K1',
-                'department_id'   => 'dept-prj-0000000000000000006',
-                'position_id'     => 'pos-pm-000000000000000000013',
+                'department_id'   => '33333333-3333-3333-3333-0000000000000000006',
+                'position_id'     => '55555555-5555-5555-5555-000000000000000000013',
                 'join_date'       => '2020-07-01',
                 'employment_type' => 'permanent',
                 'base_salary'     => 8500000,
@@ -92,8 +92,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'male',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K0',
-                'department_id'   => 'dept-fin-0000000000000000003',
-                'position_id'     => 'pos-accountant-0000000000000008',
+                'department_id'   => '33333333-3333-3333-3333-0000000000000000003',
+                'position_id'     => '55555555-5555-5555-5555-0000000000000008',
                 'join_date'       => '2022-03-14',
                 'employment_type' => 'permanent',
                 'base_salary'     => 5500000,
@@ -106,8 +106,8 @@ class EmployeeSeeder extends Seeder
                 'gender'          => 'male',
                 'marital_status'  => 'single',
                 'num_dependants'  => 'TK0',
-                'department_id'   => 'dept-mkt-0000000000000000004',
-                'position_id'     => 'pos-sales-exec-000000000000011',
+                'department_id'   => '33333333-3333-3333-3333-0000000000000000004',
+                'position_id'     => '55555555-5555-5555-5555-000000000000011',
                 'join_date'       => '2023-09-01',
                 'employment_type' => 'contract',
                 'contract_end_date'=> '2024-08-31',
@@ -121,7 +121,7 @@ class EmployeeSeeder extends Seeder
 
             DB::table('employees')->insertOrIgnore(array_merge($emp, [
                 'tenant_id'          => $tenantId,
-                'work_schedule_id'   => 'sched-reguler-000000000001',
+                'work_schedule_id'   => '44444444-4444-4444-4444-000000000001',
                 'bank_name'          => 'BCA',
                 'bank_account'       => '1234' . rand(100000, 999999),
                 'bank_account_name'  => $emp['full_name'],
@@ -158,15 +158,15 @@ class EmployeeSeeder extends Seeder
         }
 
         // Set manager_id di departments
-        DB::table('departments')->where('id', 'dept-hrd-0000000000000000002')
+        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000002')
             ->update(['manager_id' => 'emp-sari-000000000000000000002']);
-        DB::table('departments')->where('id', 'dept-fin-0000000000000000003')
+        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000003')
             ->update(['manager_id' => 'emp-maya-000000000000000000003']);
-        DB::table('departments')->where('id', 'dept-mkt-0000000000000000004')
+        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000004')
             ->update(['manager_id' => 'emp-dewi-000000000000000000004']);
-        DB::table('departments')->where('id', 'dept-prj-0000000000000000006')
+        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000006')
             ->update(['manager_id' => 'emp-ahmad-00000000000000000005']);
-        DB::table('departments')->where('id', 'dept-it-00000000000000000001')
+        DB::table('departments')->where('id', '33333333-3333-3333-3333-00000000000000000001')
             ->update(['manager_id' => 'emp-rizky-000000000000000001']);
 
         // Isi leave_allocations tahun 2024
