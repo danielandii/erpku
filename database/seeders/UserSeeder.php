@@ -82,8 +82,8 @@ class UserSeeder extends Seeder
                 'role_id'     => $u['role_id'],
                 'assigned_by' => '22222222-2222-2222-2222-000000000001',
                 'assigned_at' => $now,
-                'created_at'  => $now,
-                'updated_at'  => $now,
+                // 'created_at'  => $now,
+                // 'updated_at'  => $now,
             ]);
         }
 
