@@ -10,7 +10,7 @@ class LeaveTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        $tenantId = SeederConstants::TENANT_ID;
         $now      = now();
 
         $types = [
@@ -95,7 +95,7 @@ class LeaveTypeSeeder extends Seeder
 
         foreach ($types as $type) {
             DB::table('leave_types')->insertOrIgnore(array_merge($type, [
-                'id'         => Str::uuid(),
+                'id'         => (string) Str::uuid(),
                 'tenant_id'  => $tenantId,
                 'is_active'  => true,
                 'created_at' => $now,

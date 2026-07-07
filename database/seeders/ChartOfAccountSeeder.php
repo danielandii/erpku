@@ -225,7 +225,7 @@ class ChartOfAccountSeeder extends Seeder
     {
         $bankAccounts = [
             [
-                'id'              => '66666666-6666-6666-6666-000000000000001',
+                'id'              => Str::uuid(),
                 'coa_code'        => '1112',
                 'bank_name'       => 'BCA',
                 'account_number'  => '1234567890',
@@ -235,7 +235,7 @@ class ChartOfAccountSeeder extends Seeder
                 'is_default'      => true,
             ],
             [
-                'id'              => '66666666-6666-6666-6666-000000000000002',
+                'id'              => Str::uuid(),
                 'coa_code'        => '1113',
                 'bank_name'       => 'Mandiri',
                 'account_number'  => '9876543210',
@@ -245,7 +245,7 @@ class ChartOfAccountSeeder extends Seeder
                 'is_default'      => false,
             ],
             [
-                'id'              => '66666666-6666-6666-6666-000000000000003',
+                'id'              => Str::uuid(),
                 'coa_code'        => '1111',
                 'bank_name'       => 'Kas Kecil',
                 'account_number'  => 'KAS-001',
