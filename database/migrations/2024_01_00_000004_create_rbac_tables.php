@@ -8,28 +8,28 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ── Roles ─────────────────────────────────────────────
+        // ── Roles ─────────────────────────────────────────────────────────────
         Schema::create('roles', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('tenant_id')->nullable()->constrained('tenants')->cascadeOnDelete()
-                  ->comment('NULL = system role berlaku global');
+            $table->foreignUuid('tenant_id')->nullable()
+                  ->constrained('tenants')->cascadeOnDelete();
             $table->string('name', 100);
-            $table->string('slug', 100)->comment('Identifier: super_admin | admin | manager | staff | viewer');
+            $table->string('slug', 100);
             $table->text('description')->nullable();
-            $table->boolean('is_system')->default(false)->comment('System role tidak dapat dihapus');
+            $table->boolean('is_system')->default(false);
             $table->timestamps();
 
             $table->unique(['tenant_id', 'slug']);
             $table->index('tenant_id');
         });
 
-        // ── Permissions ────────────────────────────────────────
+        // ── Permissions ───────────────────────────────────────────────────────
         Schema::create('permissions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('module', 50)->comment('Nama modul: user | hrd | marketing | finance | project');
-            $table->string('resource', 100)->comment('Resource: attendance | invoice | lead | task');
-            $table->string('action', 50)->comment('Action: create | read | update | delete | approve | export');
-            $table->string('name', 255)->comment('Format: module.resource.action — misal: hrd.attendance.create');
+            $table->string('module', 50);
+            $table->string('resource', 100);
+            $table->string('action', 50);
+            $table->string('name', 255);
             $table->text('description')->nullable();
             $table->timestamps();
 
@@ -37,12 +37,16 @@ return new class extends Migration
             $table->index('module');
         });
 
-        // ── Role ↔ Permission (pivot) ─────────────────────────
+        // ── Role ↔ Permission (pivot) ─────────────────────────────────────────
+        // granted_by → nullable agar bisa di-seed sebelum users dibuat
         Schema::create('role_permissions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('role_id')->constrained('roles')->cascadeOnDelete();
-            $table->foreignUuid('permission_id')->constrained('permissions')->cascadeOnDelete();
-            $table->foreignUuid('granted_by')->constrained('users')->restrictOnDelete();
+            $table->foreignUuid('role_id')
+                  ->constrained('roles')->cascadeOnDelete();
+            $table->foreignUuid('permission_id')
+                  ->constrained('permissions')->cascadeOnDelete();
+            // NULLABLE — tidak wajib ada user yang meng-grant (untuk seeder/system)
+            $table->uuid('granted_by')->nullable()->index();
             $table->timestamp('granted_at')->useCurrent();
 
             $table->unique(['role_id', 'permission_id']);
@@ -50,14 +54,18 @@ return new class extends Migration
             $table->index('permission_id');
         });
 
-        // ── User ↔ Role (pivot) ───────────────────────────────
+        // ── User ↔ Role (pivot) ───────────────────────────────────────────────
+        // assigned_by → nullable untuk kasus seeder/system assignment
         Schema::create('user_roles', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('role_id')->constrained('roles')->cascadeOnDelete();
-            $table->foreignUuid('assigned_by')->constrained('users')->restrictOnDelete();
+            $table->foreignUuid('user_id')
+                  ->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('role_id')
+                  ->constrained('roles')->cascadeOnDelete();
+            // NULLABLE — tidak wajib ada user yang meng-assign (untuk seeder/system)
+            $table->uuid('assigned_by')->nullable()->index();
             $table->timestamp('assigned_at')->useCurrent();
-            $table->timestamp('expires_at')->nullable()->comment('Opsional: role sementara dengan masa berlaku');
+            $table->timestamp('expires_at')->nullable();
 
             $table->unique(['user_id', 'role_id']);
             $table->index('user_id');

@@ -13,18 +13,18 @@ class RoleSeeder extends Seeder
         $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
         $now      = now();
 
-        // ── System Roles ───────────────────────────────────────
+        // ── System Roles ───────────────────────────────────────────────────────
         $roles = [
             [
-                'id'          => '11111111-1111-1111-1111-000000000001',
-                'tenant_id'   => null,           // Global, tidak terikat tenant
+                'id'          => 'role-super-admin-000000000001',
+                'tenant_id'   => null,
                 'name'        => 'Super Admin',
                 'slug'        => 'super_admin',
                 'description' => 'Akses penuh ke seluruh sistem termasuk pengaturan tenant',
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000002',
+                'id'          => 'role-admin-tenant-000000000002',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Admin',
                 'slug'        => 'admin',
@@ -32,7 +32,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000003',
+                'id'          => 'role-hr-manager-00000000000003',
                 'tenant_id'   => $tenantId,
                 'name'        => 'HR Manager',
                 'slug'        => 'hr_manager',
@@ -40,7 +40,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000004',
+                'id'          => 'role-finance-manager-000000004',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Finance Manager',
                 'slug'        => 'finance_manager',
@@ -48,7 +48,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000005',
+                'id'          => 'role-sales-manager-0000000005',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Sales Manager',
                 'slug'        => 'sales_manager',
@@ -56,7 +56,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000006',
+                'id'          => 'role-project-manager-000000006',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Project Manager',
                 'slug'        => 'project_manager',
@@ -64,7 +64,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000007',
+                'id'          => 'role-staff-general-0000000007',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Staff',
                 'slug'        => 'staff',
@@ -72,7 +72,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => '11111111-1111-1111-1111-000000000008',
+                'id'          => 'role-viewer-readonly-000000008',
                 'tenant_id'   => $tenantId,
                 'name'        => 'Viewer',
                 'slug'        => 'viewer',
@@ -88,75 +88,94 @@ class RoleSeeder extends Seeder
             ]));
         }
 
-        // ── Assign Permissions ke Roles ────────────────────────
-        // Ambil semua permission untuk di-mapping
+        // ── Assign Permissions ke Roles ────────────────────────────────────────
         $allPerms = DB::table('permissions')->pluck('id', 'name');
 
         // Super Admin: semua permission
-        $superAdminPermsId = '11111111-1111-1111-1111-000000000001';
-        $this->assignPermissions($superAdminPermsId, $allPerms->values()->toArray());
+        $this->assignPermissions(
+            'role-super-admin-000000000001',
+            $allPerms->values()->toArray()
+        );
 
-        // HR Manager: semua permission HRD + read user
-        $hrPerms = $allPerms->filter(fn($id, $name) =>
-            str_starts_with($name, 'hrd.') ||
-            in_array($name, ['user.users.read'])
-        )->values()->toArray();
-        $this->assignPermissions('11111111-1111-1111-1111-000000000003', $hrPerms);
+        // HR Manager: semua HRD + read user
+        $this->assignPermissions(
+            'role-hr-manager-00000000000003',
+            $allPerms->filter(fn($id, $name) =>
+                str_starts_with($name, 'hrd.') ||
+                in_array($name, ['user.users.read'])
+            )->values()->toArray()
+        );
 
-        // Finance Manager: semua permission Finance + read clients + read users
-        $financePerms = $allPerms->filter(fn($id, $name) =>
-            str_starts_with($name, 'finance.') ||
-            in_array($name, ['marketing.clients.read', 'marketing.quotations.read', 'user.users.read'])
-        )->values()->toArray();
-        $this->assignPermissions('11111111-1111-1111-1111-000000000004', $financePerms);
+        // Finance Manager: semua Finance + read marketing tertentu + read users
+        $this->assignPermissions(
+            'role-finance-manager-000000004',
+            $allPerms->filter(fn($id, $name) =>
+                str_starts_with($name, 'finance.') ||
+                in_array($name, [
+                    'marketing.clients.read',
+                    'marketing.quotations.read',
+                    'user.users.read',
+                ])
+            )->values()->toArray()
+        );
 
-        // Sales Manager: semua permission Marketing
-        $salesPerms = $allPerms->filter(fn($id, $name) =>
-            str_starts_with($name, 'marketing.')
-        )->values()->toArray();
-        $this->assignPermissions('11111111-1111-1111-1111-000000000005', $salesPerms);
+        // Sales Manager: semua Marketing
+        $this->assignPermissions(
+            'role-sales-manager-0000000005',
+            $allPerms->filter(fn($id, $name) =>
+                str_starts_with($name, 'marketing.')
+            )->values()->toArray()
+        );
 
-        // Project Manager: semua permission Project
-        $projectPerms = $allPerms->filter(fn($id, $name) =>
-            str_starts_with($name, 'project.')
-        )->values()->toArray();
-        $this->assignPermissions('11111111-1111-1111-1111-000000000006', $projectPerms);
+        // Project Manager: semua Project
+        $this->assignPermissions(
+            'role-project-manager-000000006',
+            $allPerms->filter(fn($id, $name) =>
+                str_starts_with($name, 'project.')
+            )->values()->toArray()
+        );
 
-        // Staff: hanya create attendance, create leave, read task
-        $staffPerms = $allPerms->filter(fn($id, $name) =>
-            in_array($name, [
-                'hrd.attendance.create',
-                'hrd.attendance.read',
-                'hrd.leave.create',
-                'hrd.leave.read',
-                'project.tasks.read',
-                'project.tasks.update',
-                'project.time_logs.create',
-                'project.time_logs.read',
-            ])
-        )->values()->toArray();
-        $this->assignPermissions('11111111-1111-1111-1111-000000000007', $staffPerms);
+        // Staff: permission terbatas
+        $this->assignPermissions(
+            'role-staff-general-0000000007',
+            $allPerms->filter(fn($id, $name) =>
+                in_array($name, [
+                    'hrd.attendance.create',
+                    'hrd.attendance.read',
+                    'hrd.leave.create',
+                    'hrd.leave.read',
+                    'project.tasks.read',
+                    'project.tasks.update',
+                    'project.time_logs.create',
+                    'project.time_logs.read',
+                ])
+            )->values()->toArray()
+        );
 
-        // Viewer: hanya read permission
-        $viewerPerms = $allPerms->filter(fn($id, $name) =>
-            str_ends_with($name, '.read')
-        )->values()->toArray();
-        $this->assignPermissions('11111111-1111-1111-1111-000000000008', $viewerPerms);
+        // Viewer: hanya read
+        $this->assignPermissions(
+            'role-viewer-readonly-000000008',
+            $allPerms->filter(fn($id, $name) =>
+                str_ends_with($name, '.read')
+            )->values()->toArray()
+        );
 
         $this->command->info('✓ Roles & permissions seeded.');
     }
 
     private function assignPermissions(string $roleId, array $permissionIds): void
     {
-        // Ambil user ID default untuk granted_by (akan diisi setelah UserSeeder)
-        $grantedBy = '22222222-2222-2222-2222-00000000000001';
-        $now       = now();
+        if (empty($permissionIds)) return;
+
+        $now = now();
 
         $rows = array_map(fn($permId) => [
-            'id'            => Str::uuid(),
+            'id'            => (string) Str::uuid(),
             'role_id'       => $roleId,
             'permission_id' => $permId,
-            'granted_by'    => $grantedBy,
+            // granted_by = null karena kolom sudah nullable
+            // (FK ke users tidak bisa diisi sebelum UserSeeder jalan)
+            'granted_by'    => null,
             'granted_at'    => $now,
         ], $permissionIds);
 
