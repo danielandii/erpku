@@ -11,63 +11,62 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        $tenantId = SeederConstants::TENANT_ID;
         $now      = now();
 
         $users = [
             [
-                'id'        => 'user-super-admin-00000000000001',
+                'id'        => SeederConstants::USER_SUPER_ADMIN,
                 'full_name' => 'Rizky Kurniawan',
                 'email'     => 'rizky@majujaya.co.id',
-                'role_id'   => 'role-super-admin-000000000001',
+                'role_id'   => SeederConstants::ROLE_SUPER_ADMIN,
                 'is_super'  => true,
             ],
             [
-                'id'        => 'user-hr-manager-000000000000002',
+                'id'        => SeederConstants::USER_HR_MANAGER,
                 'full_name' => 'Sari Andini',
                 'email'     => 'sari@majujaya.co.id',
-                'role_id'   => 'role-hr-manager-00000000000003',
+                'role_id'   => SeederConstants::ROLE_HR_MANAGER,
                 'is_super'  => false,
             ],
             [
-                'id'        => 'user-finance-manager-00000000003',
+                'id'        => SeederConstants::USER_FINANCE_MANAGER,
                 'full_name' => 'Maya Rahayu',
                 'email'     => 'maya@majujaya.co.id',
-                'role_id'   => 'role-finance-manager-000000004',
+                'role_id'   => SeederConstants::ROLE_FINANCE_MANAGER,
                 'is_super'  => false,
             ],
             [
-                'id'        => 'user-sales-manager-000000000004',
+                'id'        => SeederConstants::USER_SALES_MANAGER,
                 'full_name' => 'Dewi Wulandari',
                 'email'     => 'dewi@majujaya.co.id',
-                'role_id'   => 'role-sales-manager-0000000005',
+                'role_id'   => SeederConstants::ROLE_SALES_MANAGER,
                 'is_super'  => false,
             ],
             [
-                'id'        => 'user-project-manager-0000000005',
+                'id'        => SeederConstants::USER_PROJECT_MANAGER,
                 'full_name' => 'Ahmad Hidayat',
                 'email'     => 'ahmad@majujaya.co.id',
-                'role_id'   => 'role-project-manager-000000006',
+                'role_id'   => SeederConstants::ROLE_PROJECT_MANAGER,
                 'is_super'  => false,
             ],
             [
-                'id'        => 'user-staff-finance-00000000000006',
+                'id'        => SeederConstants::USER_STAFF_1,
                 'full_name' => 'Budi Santoso',
                 'email'     => 'budi@majujaya.co.id',
-                'role_id'   => 'role-staff-general-0000000007',
+                'role_id'   => SeederConstants::ROLE_STAFF,
                 'is_super'  => false,
             ],
             [
-                'id'        => 'user-staff-sales-000000000000007',
+                'id'        => SeederConstants::USER_STAFF_2,
                 'full_name' => 'Fauzan Hidayat',
                 'email'     => 'fauzan@majujaya.co.id',
-                'role_id'   => 'role-staff-general-0000000007',
+                'role_id'   => SeederConstants::ROLE_STAFF,
                 'is_super'  => false,
             ],
         ];
 
         foreach ($users as $u) {
-            // 1. Insert user
             DB::table('users')->insertOrIgnore([
                 'id'                 => $u['id'],
                 'tenant_id'          => $tenantId,
@@ -83,30 +82,20 @@ class UserSeeder extends Seeder
                 'updated_at'         => $now,
             ]);
 
-            // 2. Assign role ke user
-            // assigned_by = null untuk Super Admin (self-assign),
-            // atau = Super Admin ID untuk user lainnya.
-            // Karena kolom sudah nullable, ini tidak akan error FK.
-            $assignedBy = $u['is_super']
-                ? null                              // Super Admin: tidak ada yang assign
-                : 'user-super-admin-00000000000001'; // User lain: di-assign oleh Super Admin
-
             DB::table('user_roles')->insertOrIgnore([
                 'id'          => (string) Str::uuid(),
                 'user_id'     => $u['id'],
                 'role_id'     => $u['role_id'],
-                'assigned_by' => $assignedBy,
+                'assigned_by' => $u['is_super'] ? null : SeederConstants::USER_SUPER_ADMIN,
                 'assigned_at' => $now,
             ]);
         }
 
-        // Update granted_by di role_permissions setelah Super Admin user sudah ada
-        // Isi granted_by yang tadinya null dengan Super Admin ID
+        // Update granted_by setelah Super Admin sudah ada
         DB::table('role_permissions')
             ->whereNull('granted_by')
-            ->update(['granted_by' => 'user-super-admin-00000000000001']);
+            ->update(['granted_by' => SeederConstants::USER_SUPER_ADMIN]);
 
         $this->command->info('✓ ' . count($users) . ' users seeded (password: "password").');
-        $this->command->info('✓ granted_by di role_permissions diperbarui ke Super Admin.');
     }
 }

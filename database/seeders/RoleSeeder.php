@@ -10,13 +10,12 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        $tenantId = SeederConstants::TENANT_ID;
         $now      = now();
 
-        // ── System Roles ───────────────────────────────────────────────────────
         $roles = [
             [
-                'id'          => 'role-super-admin-000000000001',
+                'id'          => SeederConstants::ROLE_SUPER_ADMIN,
                 'tenant_id'   => null,
                 'name'        => 'Super Admin',
                 'slug'        => 'super_admin',
@@ -24,7 +23,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-admin-tenant-000000000002',
+                'id'          => SeederConstants::ROLE_ADMIN,
                 'tenant_id'   => $tenantId,
                 'name'        => 'Admin',
                 'slug'        => 'admin',
@@ -32,7 +31,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-hr-manager-00000000000003',
+                'id'          => SeederConstants::ROLE_HR_MANAGER,
                 'tenant_id'   => $tenantId,
                 'name'        => 'HR Manager',
                 'slug'        => 'hr_manager',
@@ -40,7 +39,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-finance-manager-000000004',
+                'id'          => SeederConstants::ROLE_FINANCE_MANAGER,
                 'tenant_id'   => $tenantId,
                 'name'        => 'Finance Manager',
                 'slug'        => 'finance_manager',
@@ -48,7 +47,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-sales-manager-0000000005',
+                'id'          => SeederConstants::ROLE_SALES_MANAGER,
                 'tenant_id'   => $tenantId,
                 'name'        => 'Sales Manager',
                 'slug'        => 'sales_manager',
@@ -56,7 +55,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-project-manager-000000006',
+                'id'          => SeederConstants::ROLE_PROJECT_MANAGER,
                 'tenant_id'   => $tenantId,
                 'name'        => 'Project Manager',
                 'slug'        => 'project_manager',
@@ -64,7 +63,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-staff-general-0000000007',
+                'id'          => SeederConstants::ROLE_STAFF,
                 'tenant_id'   => $tenantId,
                 'name'        => 'Staff',
                 'slug'        => 'staff',
@@ -72,7 +71,7 @@ class RoleSeeder extends Seeder
                 'is_system'   => true,
             ],
             [
-                'id'          => 'role-viewer-readonly-000000008',
+                'id'          => SeederConstants::ROLE_VIEWER,
                 'tenant_id'   => $tenantId,
                 'name'        => 'Viewer',
                 'slug'        => 'viewer',
@@ -88,76 +87,49 @@ class RoleSeeder extends Seeder
             ]));
         }
 
-        // ── Assign Permissions ke Roles ────────────────────────────────────────
+        // Assign permissions ke roles
         $allPerms = DB::table('permissions')->pluck('id', 'name');
 
-        // Super Admin: semua permission
-        $this->assignPermissions(
-            'role-super-admin-000000000001',
+        $this->assignPermissions(SeederConstants::ROLE_SUPER_ADMIN,
             $allPerms->values()->toArray()
         );
 
-        // HR Manager: semua HRD + read user
-        $this->assignPermissions(
-            'role-hr-manager-00000000000003',
+        $this->assignPermissions(SeederConstants::ROLE_ADMIN,
+            $allPerms->filter(fn($id, $name) => str_starts_with($name, 'user.'))->values()->toArray()
+        );
+
+        $this->assignPermissions(SeederConstants::ROLE_HR_MANAGER,
             $allPerms->filter(fn($id, $name) =>
-                str_starts_with($name, 'hrd.') ||
-                in_array($name, ['user.users.read'])
+                str_starts_with($name, 'hrd.') || $name === 'user.users.read'
             )->values()->toArray()
         );
 
-        // Finance Manager: semua Finance + read marketing tertentu + read users
-        $this->assignPermissions(
-            'role-finance-manager-000000004',
+        $this->assignPermissions(SeederConstants::ROLE_FINANCE_MANAGER,
             $allPerms->filter(fn($id, $name) =>
                 str_starts_with($name, 'finance.') ||
-                in_array($name, [
-                    'marketing.clients.read',
-                    'marketing.quotations.read',
-                    'user.users.read',
-                ])
+                in_array($name, ['marketing.clients.read', 'marketing.quotations.read', 'user.users.read'])
             )->values()->toArray()
         );
 
-        // Sales Manager: semua Marketing
-        $this->assignPermissions(
-            'role-sales-manager-0000000005',
-            $allPerms->filter(fn($id, $name) =>
-                str_starts_with($name, 'marketing.')
-            )->values()->toArray()
+        $this->assignPermissions(SeederConstants::ROLE_SALES_MANAGER,
+            $allPerms->filter(fn($id, $name) => str_starts_with($name, 'marketing.'))->values()->toArray()
         );
 
-        // Project Manager: semua Project
-        $this->assignPermissions(
-            'role-project-manager-000000006',
-            $allPerms->filter(fn($id, $name) =>
-                str_starts_with($name, 'project.')
-            )->values()->toArray()
+        $this->assignPermissions(SeederConstants::ROLE_PROJECT_MANAGER,
+            $allPerms->filter(fn($id, $name) => str_starts_with($name, 'project.'))->values()->toArray()
         );
 
-        // Staff: permission terbatas
-        $this->assignPermissions(
-            'role-staff-general-0000000007',
-            $allPerms->filter(fn($id, $name) =>
-                in_array($name, [
-                    'hrd.attendance.create',
-                    'hrd.attendance.read',
-                    'hrd.leave.create',
-                    'hrd.leave.read',
-                    'project.tasks.read',
-                    'project.tasks.update',
-                    'project.time_logs.create',
-                    'project.time_logs.read',
-                ])
-            )->values()->toArray()
+        $this->assignPermissions(SeederConstants::ROLE_STAFF,
+            $allPerms->filter(fn($id, $name) => in_array($name, [
+                'hrd.attendance.create', 'hrd.attendance.read',
+                'hrd.leave.create', 'hrd.leave.read',
+                'project.tasks.read', 'project.tasks.update',
+                'project.time_logs.create', 'project.time_logs.read',
+            ]))->values()->toArray()
         );
 
-        // Viewer: hanya read
-        $this->assignPermissions(
-            'role-viewer-readonly-000000008',
-            $allPerms->filter(fn($id, $name) =>
-                str_ends_with($name, '.read')
-            )->values()->toArray()
+        $this->assignPermissions(SeederConstants::ROLE_VIEWER,
+            $allPerms->filter(fn($id, $name) => str_ends_with($name, '.read'))->values()->toArray()
         );
 
         $this->command->info('✓ Roles & permissions seeded.');
@@ -166,19 +138,14 @@ class RoleSeeder extends Seeder
     private function assignPermissions(string $roleId, array $permissionIds): void
     {
         if (empty($permissionIds)) return;
-
-        $now = now();
-
+        $now  = now();
         $rows = array_map(fn($permId) => [
             'id'            => (string) Str::uuid(),
             'role_id'       => $roleId,
             'permission_id' => $permId,
-            // granted_by = null karena kolom sudah nullable
-            // (FK ke users tidak bisa diisi sebelum UserSeeder jalan)
             'granted_by'    => null,
             'granted_at'    => $now,
         ], $permissionIds);
-
         foreach (array_chunk($rows, 100) as $chunk) {
             DB::table('role_permissions')->insertOrIgnore($chunk);
         }

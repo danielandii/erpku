@@ -10,7 +10,8 @@ class TenantSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        $tenantId = SeederConstants::TENANT_ID;
+        $now      = now();
 
         DB::table('tenants')->insertOrIgnore([
             'id'                => $tenantId,
@@ -24,21 +25,20 @@ class TenantSeeder extends Seeder
             'currency'          => 'IDR',
             'is_active'         => true,
             'subscription_plan' => 'pro',
-            'created_at'        => now(),
-            'updated_at'        => now(),
+            'created_at'        => $now,
+            'updated_at'        => $now,
         ]);
 
-        // Aktifkan semua modul untuk tenant demo
         $modules = ['user', 'hrd', 'marketing', 'finance', 'project'];
         foreach ($modules as $module) {
             DB::table('tenant_module_configs')->insertOrIgnore([
-                'id'          => Str::uuid(),
+                'id'          => (string) Str::uuid(),
                 'tenant_id'   => $tenantId,
                 'module_name' => $module,
                 'is_enabled'  => true,
-                'enabled_at'  => now(),
-                'created_at'  => now(),
-                'updated_at'  => now(),
+                'enabled_at'  => $now,
+                'created_at'  => $now,
+                'updated_at'  => $now,
             ]);
         }
 

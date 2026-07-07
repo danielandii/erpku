@@ -10,17 +10,17 @@ class DepartmentPositionSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        $tenantId = SeederConstants::TENANT_ID;
         $now      = now();
 
-        // ── Departments ────────────────────────────────────────
+        // ── Departments ───────────────────────────────────────────────────────
         $departments = [
-            ['id' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'Information Technology', 'code' => 'IT'],
-            ['id' => '33333333-3333-3333-3333-0000000000000000002', 'name' => 'Human Resource & Development', 'code' => 'HRD'],
-            ['id' => '33333333-3333-3333-3333-0000000000000000003', 'name' => 'Finance & Accounting', 'code' => 'FIN'],
-            ['id' => '33333333-3333-3333-3333-0000000000000000004', 'name' => 'Marketing & Sales', 'code' => 'MKT'],
-            ['id' => '33333333-3333-3333-3333-0000000000000000005', 'name' => 'Operations', 'code' => 'OPS'],
-            ['id' => '33333333-3333-3333-3333-0000000000000000006', 'name' => 'Project Management Office', 'code' => 'PMO'],
+            ['id' => SeederConstants::DEPT_IT,         'name' => 'Information Technology',    'code' => 'IT'],
+            ['id' => SeederConstants::DEPT_HRD,        'name' => 'Human Resource & Development','code' => 'HRD'],
+            ['id' => SeederConstants::DEPT_FINANCE,    'name' => 'Finance & Accounting',       'code' => 'FIN'],
+            ['id' => SeederConstants::DEPT_MARKETING,  'name' => 'Marketing & Sales',          'code' => 'MKT'],
+            ['id' => SeederConstants::DEPT_OPERATIONS, 'name' => 'Operations',                 'code' => 'OPS'],
+            ['id' => SeederConstants::DEPT_PROJECT,    'name' => 'Project Management Office',  'code' => 'PMO'],
         ];
 
         foreach ($departments as $dept) {
@@ -32,34 +32,34 @@ class DepartmentPositionSeeder extends Seeder
             ]));
         }
 
-        // ── Work Schedules ─────────────────────────────────────
+        // ── Work Schedules ────────────────────────────────────────────────────
         $schedules = [
             [
-                'id'                    => '44444444-4444-4444-4444-000000000001',
-                'name'                  => 'Reguler (Senin-Jumat)',
-                'work_days'             => json_encode([1, 2, 3, 4, 5]),
-                'check_in_time'         => '08:00:00',
-                'check_out_time'        => '17:00:00',
-                'grace_period_minutes'  => 15,
-                'break_duration_minutes'=> 60,
+                'id'                     => SeederConstants::SCHED_REGULAR,
+                'name'                   => 'Reguler (Senin-Jumat)',
+                'work_days'              => json_encode([1,2,3,4,5]),
+                'check_in_time'          => '08:00:00',
+                'check_out_time'         => '17:00:00',
+                'grace_period_minutes'   => 15,
+                'break_duration_minutes' => 60,
             ],
             [
-                'id'                    => '44444444-4444-4444-4444-0000000002',
-                'name'                  => 'Shift Pagi (06:00-14:00)',
-                'work_days'             => json_encode([1, 2, 3, 4, 5, 6]),
-                'check_in_time'         => '06:00:00',
-                'check_out_time'        => '14:00:00',
-                'grace_period_minutes'  => 10,
-                'break_duration_minutes'=> 30,
+                'id'                     => SeederConstants::SCHED_SHIFT_PAGI,
+                'name'                   => 'Shift Pagi (06:00-14:00)',
+                'work_days'              => json_encode([1,2,3,4,5,6]),
+                'check_in_time'          => '06:00:00',
+                'check_out_time'         => '14:00:00',
+                'grace_period_minutes'   => 10,
+                'break_duration_minutes' => 30,
             ],
             [
-                'id'                    => '44444444-4444-4444-4444-000000003',
-                'name'                  => 'Shift Malam (22:00-06:00)',
-                'work_days'             => json_encode([1, 2, 3, 4, 5, 6]),
-                'check_in_time'         => '22:00:00',
-                'check_out_time'        => '06:00:00',
-                'grace_period_minutes'  => 10,
-                'break_duration_minutes'=> 30,
+                'id'                     => SeederConstants::SCHED_SHIFT_MALAM,
+                'name'                   => 'Shift Malam (22:00-06:00)',
+                'work_days'              => json_encode([1,2,3,4,5,6]),
+                'check_in_time'          => '22:00:00',
+                'check_out_time'         => '06:00:00',
+                'grace_period_minutes'   => 10,
+                'break_duration_minutes' => 30,
             ],
         ];
 
@@ -72,27 +72,27 @@ class DepartmentPositionSeeder extends Seeder
             ]));
         }
 
-        // ── Positions ──────────────────────────────────────────
+        // ── Positions ─────────────────────────────────────────────────────────
         $positions = [
             // IT
-            ['id' => '55555555-5555-5555-5555-000000000001', 'dept' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'IT Director',       'level' => 'Director'],
-            ['id' => '55555555-5555-5555-5555-0000000002', 'dept' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'Fullstack Developer','level' => 'Staff'],
-            ['id' => '55555555-5555-5555-5555-00000000000003','dept' => '33333333-3333-3333-3333-00000000000000000001', 'name' => 'DevOps Engineer',   'level' => 'Staff'],
+            ['id' => SeederConstants::POS_IT_DIRECTOR,  'dept' => SeederConstants::DEPT_IT,        'name' => 'IT Director',         'level' => 'director'],
+            ['id' => SeederConstants::POS_IT_DEV,        'dept' => SeederConstants::DEPT_IT,        'name' => 'Software Developer',  'level' => 'staff'],
+            ['id' => SeederConstants::POS_IT_SYSADMIN,   'dept' => SeederConstants::DEPT_IT,        'name' => 'System Administrator','level' => 'staff'],
             // HRD
-            ['id' => '55555555-5555-5555-5555-000000000004',  'dept' => '33333333-3333-3333-3333-0000000000000000002', 'name' => 'HR Manager',        'level' => 'Manager'],
-            ['id' => '55555555-5555-5555-5555-0000000000000005','dept' => '33333333-3333-3333-3333-0000000000000000002', 'name' => 'HR Staff',          'level' => 'Staff'],
-            ['id' => '55555555-5555-5555-5555-00000000000006','dept'=> '33333333-3333-3333-3333-0000000000000000002', 'name' => 'Recruitment Staff', 'level' => 'Staff'],
+            ['id' => SeederConstants::POS_HR_MANAGER,    'dept' => SeederConstants::DEPT_HRD,       'name' => 'HR Manager',          'level' => 'manager'],
+            ['id' => SeederConstants::POS_HR_STAFF,      'dept' => SeederConstants::DEPT_HRD,       'name' => 'HR Staff',            'level' => 'staff'],
+            ['id' => SeederConstants::POS_HR_RECRUITMENT,'dept' => SeederConstants::DEPT_HRD,       'name' => 'Recruitment Specialist','level' => 'staff'],
             // Finance
-            ['id' => '55555555-5555-5555-5555-00000000000007','dept'=> '33333333-3333-3333-3333-0000000000000000003', 'name' => 'Finance Manager',   'level' => 'Manager'],
-            ['id' => '55555555-5555-5555-5555-0000000000000008','dept'=>'33333333-3333-3333-3333-0000000000000000003', 'name' => 'Accountant',        'level' => 'Staff'],
-            ['id' => '55555555-5555-5555-5555-000000000000009', 'dept'=>'33333333-3333-3333-3333-0000000000000000003', 'name' => 'Tax Staff',         'level' => 'Staff'],
+            ['id' => SeederConstants::POS_FIN_MANAGER,   'dept' => SeederConstants::DEPT_FINANCE,   'name' => 'Finance Manager',     'level' => 'manager'],
+            ['id' => SeederConstants::POS_ACCOUNTANT,    'dept' => SeederConstants::DEPT_FINANCE,   'name' => 'Accountant',          'level' => 'staff'],
+            ['id' => SeederConstants::POS_TAX,           'dept' => SeederConstants::DEPT_FINANCE,   'name' => 'Tax Specialist',      'level' => 'staff'],
             // Marketing
-            ['id' => '55555555-5555-5555-5555-0000000000010','dept'=>'33333333-3333-3333-3333-0000000000000000004','name' => 'Sales Manager',      'level' => 'Manager'],
-            ['id' => '55555555-5555-5555-5555-000000000000011', 'dept'=>'33333333-3333-3333-3333-0000000000000000004','name' => 'Sales Executive',    'level' => 'Staff'],
-            ['id' => '55555555-5555-5555-5555-000000000012','dept'=>'33333333-3333-3333-3333-0000000000000000004','name' => 'Marketing Specialist','level' => 'Staff'],
-            // PMO
-            ['id' => '55555555-5555-5555-5555-000000000000000000013',  'dept'=>'33333333-3333-3333-3333-0000000000000000006', 'name' => 'Project Manager',   'level' => 'Manager'],
-            ['id' => '55555555-5555-5555-5555-000000000000000000014',  'dept'=>'33333333-3333-3333-3333-0000000000000000006', 'name' => 'Business Analyst',  'level' => 'Staff'],
+            ['id' => SeederConstants::POS_SALES_MANAGER, 'dept' => SeederConstants::DEPT_MARKETING, 'name' => 'Sales Manager',       'level' => 'manager'],
+            ['id' => SeederConstants::POS_SALES_EXEC,    'dept' => SeederConstants::DEPT_MARKETING, 'name' => 'Sales Executive',     'level' => 'staff'],
+            ['id' => SeederConstants::POS_MARKETING,     'dept' => SeederConstants::DEPT_MARKETING, 'name' => 'Marketing Specialist','level' => 'staff'],
+            // Project
+            ['id' => SeederConstants::POS_PM,            'dept' => SeederConstants::DEPT_PROJECT,   'name' => 'Project Manager',     'level' => 'manager'],
+            ['id' => SeederConstants::POS_BUSINESS_ANALYST,'dept'=> SeederConstants::DEPT_PROJECT,  'name' => 'Business Analyst',    'level' => 'staff'],
         ];
 
         foreach ($positions as $pos) {
@@ -108,38 +108,6 @@ class DepartmentPositionSeeder extends Seeder
             ]);
         }
 
-        // ── Public Holidays 2024 ───────────────────────────────
-        $holidays = [
-            ['name' => "Tahun Baru 2024",          'date' => '2024-01-01'],
-            ['name' => "Isra Mi'raj",               'date' => '2024-02-08'],
-            ['name' => "Hari Raya Nyepi",           'date' => '2024-03-11'],
-            ['name' => "Jumat Agung",               'date' => '2024-03-29'],
-            ['name' => "Idul Fitri 1445 H (H-1)",  'date' => '2024-04-10'],
-            ['name' => "Idul Fitri 1445 H",        'date' => '2024-04-11'],
-            ['name' => "Idul Fitri 1445 H (H+1)",  'date' => '2024-04-12'],
-            ['name' => "Hari Buruh Nasional",       'date' => '2024-05-01'],
-            ['name' => "Kenaikan Isa Almasih",      'date' => '2024-05-09'],
-            ['name' => "Hari Kebangkitan Nasional", 'date' => '2024-05-20'],
-            ['name' => "Waisak 2568 BE",            'date' => '2024-05-23'],
-            ['name' => "Idul Adha 1445 H",         'date' => '2024-06-17'],
-            ['name' => "Tahun Baru Islam 1446 H",  'date' => '2024-07-07'],
-            ['name' => "Hari Kemerdekaan RI",       'date' => '2024-08-17'],
-            ['name' => "Maulid Nabi Muhammad SAW",  'date' => '2024-09-16'],
-            ['name' => "Hari Natal",                'date' => '2024-12-25'],
-        ];
-
-        foreach ($holidays as $h) {
-            DB::table('public_holidays')->insertOrIgnore([
-                'id'           => Str::uuid(),
-                'tenant_id'    => $tenantId,
-                'name'         => $h['name'],
-                'holiday_date' => $h['date'],
-                'is_recurring' => false,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ]);
-        }
-
-        $this->command->info('✓ Departments, positions, work schedules & holidays seeded.');
+        $this->command->info('✓ Departments, work schedules, and positions seeded.');
     }
 }

@@ -10,108 +10,115 @@ class EmployeeSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenantId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        $tenantId = SeederConstants::TENANT_ID;
         $now      = now();
 
         $employees = [
             [
-                'id'              => 'emp-rizky-000000000000000001',
-                'user_id'         => '22222222-2222-2222-2222-00000000000001',
+                'id'              => SeederConstants::EMP_RIZKY,
+                'user_id'         => SeederConstants::USER_SUPER_ADMIN,
                 'employee_number' => 'MJ-001',
                 'full_name'       => 'Rizky Kurniawan',
                 'gender'          => 'male',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K1',
-                'department_id'   => '33333333-3333-3333-3333-00000000000000000001',
-                'position_id'     => '55555555-5555-5555-5555-000000000001',
+                'department_id'   => SeederConstants::DEPT_IT,
+                'position_id'     => SeederConstants::POS_IT_DIRECTOR,
+                'work_schedule_id'=> SeederConstants::SCHED_REGULAR,
                 'join_date'       => '2019-01-02',
                 'employment_type' => 'permanent',
                 'base_salary'     => 15000000,
             ],
             [
-                'id'              => 'emp-sari-000000000000000000002',
-                'user_id'         => '22222222-2222-2222-2222-00000000000002',
+                'id'              => SeederConstants::EMP_SARI,
+                'user_id'         => SeederConstants::USER_HR_MANAGER,
                 'employee_number' => 'MJ-002',
                 'full_name'       => 'Sari Andini',
                 'gender'          => 'female',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K0',
-                'department_id'   => '33333333-3333-3333-3333-0000000000000000002',
-                'position_id'     => '55555555-5555-5555-5555-000000000004',
+                'department_id'   => SeederConstants::DEPT_HRD,
+                'position_id'     => SeederConstants::POS_HR_MANAGER,
+                'work_schedule_id'=> SeederConstants::SCHED_REGULAR,
                 'join_date'       => '2020-01-06',
                 'employment_type' => 'permanent',
                 'base_salary'     => 8000000,
             ],
             [
-                'id'              => 'emp-maya-000000000000000000003',
-                'user_id'         => '22222222-2222-2222-2222-00000000000003',
+                'id'              => SeederConstants::EMP_MAYA,
+                'user_id'         => SeederConstants::USER_FINANCE_MANAGER,
                 'employee_number' => 'MJ-003',
                 'full_name'       => 'Maya Rahayu',
                 'gender'          => 'female',
                 'marital_status'  => 'single',
                 'num_dependants'  => 'TK0',
-                'department_id'   => '33333333-3333-3333-3333-0000000000000000003',
-                'position_id'     => '55555555-5555-5555-5555-00000000000007',
+                'department_id'   => SeederConstants::DEPT_FINANCE,
+                'position_id'     => SeederConstants::POS_FIN_MANAGER,
+                'work_schedule_id'=> SeederConstants::SCHED_REGULAR,
                 'join_date'       => '2019-03-01',
                 'employment_type' => 'permanent',
                 'base_salary'     => 9000000,
             ],
             [
-                'id'              => 'emp-dewi-000000000000000000004',
-                'user_id'         => '22222222-2222-2222-2222-000000000004',
+                'id'              => SeederConstants::EMP_DEWI,
+                'user_id'         => SeederConstants::USER_SALES_MANAGER,
                 'employee_number' => 'MJ-004',
                 'full_name'       => 'Dewi Wulandari',
                 'gender'          => 'female',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K2',
-                'department_id'   => '33333333-3333-3333-3333-0000000000000000004',
-                'position_id'     => '55555555-5555-5555-5555-0000000000010',
+                'department_id'   => SeederConstants::DEPT_MARKETING,
+                'position_id'     => SeederConstants::POS_SALES_MANAGER,
+                'work_schedule_id'=> SeederConstants::SCHED_REGULAR,
                 'join_date'       => '2021-06-01',
                 'employment_type' => 'permanent',
                 'base_salary'     => 7500000,
             ],
             [
-                'id'              => 'emp-ahmad-00000000000000000005',
-                'user_id'         => '22222222-2222-2222-2222-00000000000005',
+                'id'              => SeederConstants::EMP_AHMAD,
+                'user_id'         => SeederConstants::USER_PROJECT_MANAGER,
                 'employee_number' => 'MJ-005',
                 'full_name'       => 'Ahmad Hidayat',
                 'gender'          => 'male',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K1',
-                'department_id'   => '33333333-3333-3333-3333-0000000000000000006',
-                'position_id'     => '55555555-5555-5555-5555-000000000000000000013',
+                'department_id'   => SeederConstants::DEPT_PROJECT,
+                'position_id'     => SeederConstants::POS_PM,
+                'work_schedule_id'=> SeederConstants::SCHED_REGULAR,
                 'join_date'       => '2020-07-01',
                 'employment_type' => 'permanent',
                 'base_salary'     => 8500000,
             ],
             [
-                'id'              => 'emp-budi-000000000000000000006',
-                'user_id'         => '22222222-2222-2222-2222-00000000000006',
+                'id'              => SeederConstants::EMP_BUDI,
+                'user_id'         => SeederConstants::USER_STAFF_1,
                 'employee_number' => 'MJ-006',
                 'full_name'       => 'Budi Santoso',
                 'gender'          => 'male',
                 'marital_status'  => 'married',
                 'num_dependants'  => 'K0',
-                'department_id'   => '33333333-3333-3333-3333-0000000000000000003',
-                'position_id'     => '55555555-5555-5555-5555-0000000000000008',
+                'department_id'   => SeederConstants::DEPT_FINANCE,
+                'position_id'     => SeederConstants::POS_ACCOUNTANT,
+                'work_schedule_id'=> SeederConstants::SCHED_REGULAR,
                 'join_date'       => '2022-03-14',
                 'employment_type' => 'permanent',
                 'base_salary'     => 5500000,
             ],
             [
-                'id'              => 'emp-fauzan-0000000000000000007',
-                'user_id'         => '22222222-2222-2222-2222-000000000000007',
-                'employee_number' => 'MJ-007',
-                'full_name'       => 'Fauzan Hidayat',
-                'gender'          => 'male',
-                'marital_status'  => 'single',
-                'num_dependants'  => 'TK0',
-                'department_id'   => '33333333-3333-3333-3333-0000000000000000004',
-                'position_id'     => '55555555-5555-5555-5555-000000000000011',
-                'join_date'       => '2023-09-01',
-                'employment_type' => 'contract',
+                'id'               => SeederConstants::EMP_FAUZAN,
+                'user_id'          => SeederConstants::USER_STAFF_2,
+                'employee_number'  => 'MJ-007',
+                'full_name'        => 'Fauzan Hidayat',
+                'gender'           => 'male',
+                'marital_status'   => 'single',
+                'num_dependants'   => 'TK0',
+                'department_id'    => SeederConstants::DEPT_MARKETING,
+                'position_id'      => SeederConstants::POS_SALES_EXEC,
+                'work_schedule_id' => SeederConstants::SCHED_REGULAR,
+                'join_date'        => '2023-09-01',
+                'employment_type'  => 'contract',
                 'contract_end_date'=> '2024-08-31',
-                'base_salary'     => 4500000,
+                'base_salary'      => 4500000,
             ],
         ];
 
@@ -120,56 +127,52 @@ class EmployeeSeeder extends Seeder
             unset($emp['base_salary']);
 
             DB::table('employees')->insertOrIgnore(array_merge($emp, [
-                'tenant_id'          => $tenantId,
-                'work_schedule_id'   => '44444444-4444-4444-4444-000000000001',
-                'bank_name'          => 'BCA',
-                'bank_account'       => '1234' . rand(100000, 999999),
-                'bank_account_name'  => $emp['full_name'],
-                'is_active'          => true,
-                'created_at'         => $now,
-                'updated_at'         => $now,
+                'tenant_id'         => $tenantId,
+                'bank_name'         => 'BCA',
+                'bank_account'      => '1234' . rand(100000, 999999),
+                'bank_account_name' => $emp['full_name'],
+                'is_active'         => true,
+                'created_at'        => $now,
+                'updated_at'        => $now,
             ]));
 
-            // Insert salary structure
+            // Salary structure
             DB::table('salary_structures')->insertOrIgnore([
-                'id'             => Str::uuid(),
+                'id'             => (string) Str::uuid(),
                 'tenant_id'      => $tenantId,
                 'employee_id'    => $emp['id'],
                 'base_salary'    => $baseSalary,
                 'effective_date' => $emp['join_date'],
                 'components'     => json_encode([
-                    ['name' => 'Tunjangan Jabatan',   'type' => 'allowance', 'amount' => round($baseSalary * 0.1),  'is_taxable' => true,  'is_fixed' => true],
+                    ['name' => 'Tunjangan Jabatan',   'type' => 'allowance', 'amount' => round($baseSalary * 0.10), 'is_taxable' => true,  'is_fixed' => true],
                     ['name' => 'Tunjangan Transport',  'type' => 'allowance', 'amount' => 500000,                    'is_taxable' => false, 'is_fixed' => true],
                     ['name' => 'Tunjangan Makan',     'type' => 'allowance', 'amount' => 400000,                    'is_taxable' => false, 'is_fixed' => true],
-                    ['name' => 'BPJS Kesehatan (4%)', 'type' => 'employer',  'amount' => round($baseSalary * 0.04), 'is_taxable' => false, 'is_fixed' => true],
-                    ['name' => 'BPJS TK JHT (3.7%)', 'type' => 'employer',  'amount' => round($baseSalary * 0.037),'is_taxable' => false, 'is_fixed' => true],
+                    ['name' => 'BPJS Kes Perusahaan', 'type' => 'employer',  'amount' => round($baseSalary * 0.04), 'is_taxable' => false, 'is_fixed' => true],
+                    ['name' => 'BPJS TK JHT',         'type' => 'employer',  'amount' => round($baseSalary * 0.037),'is_taxable' => false, 'is_fixed' => true],
                 ]),
-                'created_by'     => '22222222-2222-2222-2222-00000000000001',
+                'created_by'     => SeederConstants::USER_SUPER_ADMIN,
                 'created_at'     => $now,
                 'updated_at'     => $now,
             ]);
-        }
 
-        // Update employee_id di tabel users
-        foreach ($employees as $emp) {
-            DB::table('users')
-                ->where('id', $emp['user_id'])
+            // Update employee_id di users
+            DB::table('users')->where('id', $emp['user_id'])
                 ->update(['employee_id' => $emp['id']]);
         }
 
         // Set manager_id di departments
-        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000002')
-            ->update(['manager_id' => 'emp-sari-000000000000000000002']);
-        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000003')
-            ->update(['manager_id' => 'emp-maya-000000000000000000003']);
-        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000004')
-            ->update(['manager_id' => 'emp-dewi-000000000000000000004']);
-        DB::table('departments')->where('id', '33333333-3333-3333-3333-0000000000000000006')
-            ->update(['manager_id' => 'emp-ahmad-00000000000000000005']);
-        DB::table('departments')->where('id', '33333333-3333-3333-3333-00000000000000000001')
-            ->update(['manager_id' => 'emp-rizky-000000000000000001']);
+        $managerMap = [
+            SeederConstants::DEPT_IT        => SeederConstants::EMP_RIZKY,
+            SeederConstants::DEPT_HRD       => SeederConstants::EMP_SARI,
+            SeederConstants::DEPT_FINANCE   => SeederConstants::EMP_MAYA,
+            SeederConstants::DEPT_MARKETING => SeederConstants::EMP_DEWI,
+            SeederConstants::DEPT_PROJECT   => SeederConstants::EMP_AHMAD,
+        ];
+        foreach ($managerMap as $deptId => $empId) {
+            DB::table('departments')->where('id', $deptId)->update(['manager_id' => $empId]);
+        }
 
-        // Isi leave_allocations tahun 2024
+        // Seed leave allocations tahun ini
         $this->seedLeaveAllocations($tenantId, $employees, $now);
 
         $this->command->info('✓ ' . count($employees) . ' employees seeded with salary structures.');
@@ -177,43 +180,34 @@ class EmployeeSeeder extends Seeder
 
     private function seedLeaveAllocations(string $tenantId, array $employees, $now): void
     {
+        $year       = (int) date('Y');
         $leaveTypes = DB::table('leave_types')
             ->where('tenant_id', $tenantId)
             ->pluck('id', 'code');
 
-        if ($leaveTypes->isEmpty()) {
-            return; // LeaveTypeSeeder belum jalan
-        }
+        if ($leaveTypes->isEmpty()) return;
+
+        $allocMap = [
+            'ANNUAL' => 12,
+            'SICK'   => 12,
+            'UNPAID' => 0,
+        ];
 
         foreach ($employees as $emp) {
-            if (isset($leaveTypes['ANNUAL'])) {
+            foreach ($allocMap as $code => $days) {
+                if (!isset($leaveTypes[$code])) continue;
                 DB::table('leave_allocations')->insertOrIgnore([
-                    'id'             => Str::uuid(),
-                    'tenant_id'      => $tenantId,
-                    'employee_id'    => $emp['id'],
-                    'leave_type_id'  => $leaveTypes['ANNUAL'],
-                    'year'           => 2024,
-                    'allocated_days' => 12,
-                    'used_days'      => 0,
-                    'pending_days'   => 0,
-                    'carry_over_days'=> 0,
-                    'created_at'     => $now,
-                    'updated_at'     => $now,
-                ]);
-            }
-            if (isset($leaveTypes['SICK'])) {
-                DB::table('leave_allocations')->insertOrIgnore([
-                    'id'             => Str::uuid(),
-                    'tenant_id'      => $tenantId,
-                    'employee_id'    => $emp['id'],
-                    'leave_type_id'  => $leaveTypes['SICK'],
-                    'year'           => 2024,
-                    'allocated_days' => 12,
-                    'used_days'      => 0,
-                    'pending_days'   => 0,
-                    'carry_over_days'=> 0,
-                    'created_at'     => $now,
-                    'updated_at'     => $now,
+                    'id'              => (string) Str::uuid(),
+                    'tenant_id'       => $tenantId,
+                    'employee_id'     => $emp['id'],
+                    'leave_type_id'   => $leaveTypes[$code],
+                    'year'            => $year,
+                    'allocated_days'  => $days,
+                    'used_days'       => 0,
+                    'pending_days'    => 0,
+                    'carry_over_days' => 0,
+                    'created_at'      => $now,
+                    'updated_at'      => $now,
                 ]);
             }
         }
