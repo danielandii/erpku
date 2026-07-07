@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
             TenantSeeder::class,
 
             // 3. User & RBAC
-            RoleSeeder::class,
             UserSeeder::class,
+            RoleSeeder::class,
 
             // 4. HRD
             DepartmentPositionSeeder::class,
