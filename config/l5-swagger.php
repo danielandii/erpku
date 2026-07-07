@@ -118,6 +118,7 @@ return [
              * Absolute path to export views
              */
             'views' => base_path('resources/views/vendor/l5-swagger'),
+            'excludes' => [],   // <-- add this line
         ],
 
         'scanOptions' => [
