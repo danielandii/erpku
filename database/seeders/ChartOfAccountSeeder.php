@@ -280,21 +280,21 @@ class ChartOfAccountSeeder extends Seeder
         }
     }
 
-    private function seedDocumentSequences($now): void
-    {
-        $prefixes = ['INV', 'QUO', 'LDS', 'CLI', 'PRJ', 'PAY', 'JNL', 'BILL', 'PAYROLL'];
-        foreach ($prefixes as $prefix) {
-            DB::table('document_sequences')->insertOrIgnore([
-                'id'            => Str::uuid(),
-                'tenant_id'     => $this->tenantId,
-                'prefix'        => $prefix,
-                'year'          => 2024,
-                'last_sequence' => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ]);
-        }
-    }
+    // private function seedDocumentSequences($now): void
+    // {
+    //     $prefixes = ['INV', 'QUO', 'LDS', 'CLI', 'PRJ', 'PAY', 'JNL', 'BILL', 'PAYROLL'];
+    //     foreach ($prefixes as $prefix) {
+    //         DB::table('document_sequences')->insertOrIgnore([
+    //             'id'            => Str::uuid(),
+    //             'tenant_id'     => $this->tenantId,
+    //             'prefix'        => $prefix,
+    //             'year'          => 2024,
+    //             'last_sequence' => 0,
+    //             'created_at'    => $now,
+    //             'updated_at'    => $now,
+    //         ]);
+    //     }
+    // }
 
     private function seedSettings($now): void
     {
