@@ -213,7 +213,7 @@ class ChartOfAccountSeeder extends Seeder
         $this->seedBankAccounts($now);
 
         // Seed document sequences
-        $this->seedDocumentSequences($now);
+        // $this->seedDocumentSequences($now);
 
         // Seed default settings
         $this->seedSettings($now);
