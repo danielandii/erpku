@@ -9,41 +9,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 // ══════════════════════════════════════════════════════════
-// Department
+// Position
 // ══════════════════════════════════════════════════════════
-class Department extends Model
+class Position extends Model
 {
     use HasUuid, HasTenant;
 
     protected $fillable = [
-        'tenant_id', 'name', 'code', 'parent_id',
-        'manager_id', 'is_active',
+        'tenant_id', 'department_id', 'name', 'level', 'is_active',
     ];
 
     protected $casts = ['is_active' => 'boolean'];
 
-    public function parent()
+    public function department()
     {
-        return $this->belongsTo(Department::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(Department::class, 'parent_id');
-    }
-
-    public function manager()
-    {
-        return $this->belongsTo(Employee::class, 'manager_id');
+        return $this->belongsTo(Department::class);
     }
 
     public function employees()
     {
         return $this->hasMany(Employee::class);
-    }
-
-    public function positions()
-    {
-        return $this->hasMany(Position::class);
     }
 }
