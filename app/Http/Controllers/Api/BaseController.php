@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-
+use OpenApi\Annotations as OA;   // <-- this is critical
+/**
+ * @OA\PathItem(path="/api/dummy")
+ */
 /**
  * @OA\Info(
  *   title="NexERP API",
