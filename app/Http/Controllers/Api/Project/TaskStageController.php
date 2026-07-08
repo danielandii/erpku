@@ -221,131 +221,131 @@ class TaskStageController extends BaseController
 // ══════════════════════════════════════════════════════════
 // ProjectMemberController — Kelola anggota tim proyek
 // ══════════════════════════════════════════════════════════
-class ProjectMemberController extends BaseController
-{
-    /**
-     * @OA\Get(
-     *   path="/projects/{projectId}/members",
-     *   tags={"Project"},
-     *   summary="Daftar anggota tim proyek",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="projectId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="OK",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="data", type="array",
-     *         @OA\Items(
-     *           @OA\Property(property="id",        type="string", format="uuid"),
-     *           @OA\Property(property="user_id",   type="string", format="uuid"),
-     *           @OA\Property(property="full_name", type="string"),
-     *           @OA\Property(property="avatar_url",type="string", nullable=true),
-     *           @OA\Property(property="role",      type="string", enum={"manager","lead","member","observer"}),
-     *           @OA\Property(property="joined_at", type="string", format="date-time")
-     *         )
-     *       )
-     *     )
-     *   )
-     * )
-     */
-    public function index(string $projectId): JsonResponse
-    {
-        $project = Project::find($projectId);
-        if (! $project) return $this->notFound('Proyek');
+// class ProjectMemberController extends BaseController
+// {
+//     /**
+//      * @OA\Get(
+//      *   path="/projects/{projectId}/members",
+//      *   tags={"Project"},
+//      *   summary="Daftar anggota tim proyek",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="projectId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="OK",
+//      *     @OA\JsonContent(
+//      *       @OA\Property(property="data", type="array",
+//      *         @OA\Items(
+//      *           @OA\Property(property="id",        type="string", format="uuid"),
+//      *           @OA\Property(property="user_id",   type="string", format="uuid"),
+//      *           @OA\Property(property="full_name", type="string"),
+//      *           @OA\Property(property="avatar_url",type="string", nullable=true),
+//      *           @OA\Property(property="role",      type="string", enum={"manager","lead","member","observer"}),
+//      *           @OA\Property(property="joined_at", type="string", format="date-time")
+//      *         )
+//      *       )
+//      *     )
+//      *   )
+//      * )
+//      */
+//     public function index(string $projectId): JsonResponse
+//     {
+//         $project = Project::find($projectId);
+//         if (! $project) return $this->notFound('Proyek');
 
-        $members = ProjectMember::where('project_id', $projectId)
-            ->with('user')
-            ->get()
-            ->map(fn($m) => [
-                'id'         => $m->id,
-                'user_id'    => $m->user_id,
-                'full_name'  => $m->user?->full_name,
-                'email'      => $m->user?->email,
-                'avatar_url' => $m->user?->avatar_url,
-                'initials'   => collect(explode(' ', $m->user?->full_name ?? ''))->map(fn($w) => strtoupper($w[0] ?? ''))->take(2)->join(''),
-                'role'       => $m->role,
-                'joined_at'  => $m->joined_at?->toIso8601String(),
-            ]);
+//         $members = ProjectMember::where('project_id', $projectId)
+//             ->with('user')
+//             ->get()
+//             ->map(fn($m) => [
+//                 'id'         => $m->id,
+//                 'user_id'    => $m->user_id,
+//                 'full_name'  => $m->user?->full_name,
+//                 'email'      => $m->user?->email,
+//                 'avatar_url' => $m->user?->avatar_url,
+//                 'initials'   => collect(explode(' ', $m->user?->full_name ?? ''))->map(fn($w) => strtoupper($w[0] ?? ''))->take(2)->join(''),
+//                 'role'       => $m->role,
+//                 'joined_at'  => $m->joined_at?->toIso8601String(),
+//             ]);
 
-        return $this->ok($members);
-    }
+//         return $this->ok($members);
+//     }
 
-    /**
-     * @OA\Post(
-     *   path="/projects/{projectId}/members",
-     *   tags={"Project"},
-     *   summary="Tambah anggota ke proyek",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="projectId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\RequestBody(required=true,
-     *     @OA\JsonContent(
-     *       required={"user_id"},
-     *       @OA\Property(property="user_id", type="string", format="uuid"),
-     *       @OA\Property(property="role",    type="string", enum={"manager","lead","member","observer"}, default="member")
-     *     )
-     *   ),
-     *   @OA\Response(response=201, description="Anggota berhasil ditambahkan"),
-     *   @OA\Response(response=409, description="User sudah menjadi anggota")
-     * )
-     */
-    public function store(Request $request, string $projectId): JsonResponse
-    {
-        $project = Project::find($projectId);
-        if (! $project) return $this->notFound('Proyek');
+//     /**
+//      * @OA\Post(
+//      *   path="/projects/{projectId}/members",
+//      *   tags={"Project"},
+//      *   summary="Tambah anggota ke proyek",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="projectId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\RequestBody(required=true,
+//      *     @OA\JsonContent(
+//      *       required={"user_id"},
+//      *       @OA\Property(property="user_id", type="string", format="uuid"),
+//      *       @OA\Property(property="role",    type="string", enum={"manager","lead","member","observer"}, default="member")
+//      *     )
+//      *   ),
+//      *   @OA\Response(response=201, description="Anggota berhasil ditambahkan"),
+//      *   @OA\Response(response=409, description="User sudah menjadi anggota")
+//      * )
+//      */
+//     public function store(Request $request, string $projectId): JsonResponse
+//     {
+//         $project = Project::find($projectId);
+//         if (! $project) return $this->notFound('Proyek');
 
-        $validated = $request->validate([
-            'user_id' => ['required', 'uuid', 'exists:users,id'],
-            'role'    => ['sometimes', 'in:manager,lead,member,observer'],
-        ]);
+//         $validated = $request->validate([
+//             'user_id' => ['required', 'uuid', 'exists:users,id'],
+//             'role'    => ['sometimes', 'in:manager,lead,member,observer'],
+//         ]);
 
-        $exists = ProjectMember::where('project_id', $projectId)
-            ->where('user_id', $validated['user_id'])
-            ->exists();
+//         $exists = ProjectMember::where('project_id', $projectId)
+//             ->where('user_id', $validated['user_id'])
+//             ->exists();
 
-        if ($exists) {
-            return $this->error('User sudah menjadi anggota proyek ini.', 409, 'ALREADY_MEMBER');
-        }
+//         if ($exists) {
+//             return $this->error('User sudah menjadi anggota proyek ini.', 409, 'ALREADY_MEMBER');
+//         }
 
-        $member = ProjectMember::create([
-            'project_id' => $projectId,
-            'user_id'    => $validated['user_id'],
-            'role'       => $validated['role'] ?? ProjectMember::ROLE_MEMBER,
-            'joined_at'  => now(),
-        ]);
+//         $member = ProjectMember::create([
+//             'project_id' => $projectId,
+//             'user_id'    => $validated['user_id'],
+//             'role'       => $validated['role'] ?? ProjectMember::ROLE_MEMBER,
+//             'joined_at'  => now(),
+//         ]);
 
-        return $this->created([
-            'id'      => $member->id,
-            'user_id' => $member->user_id,
-            'role'    => $member->role,
-        ], 'Anggota berhasil ditambahkan ke proyek.');
-    }
+//         return $this->created([
+//             'id'      => $member->id,
+//             'user_id' => $member->user_id,
+//             'role'    => $member->role,
+//         ], 'Anggota berhasil ditambahkan ke proyek.');
+//     }
 
-    /**
-     * @OA\Delete(
-     *   path="/projects/{projectId}/members/{id}",
-     *   tags={"Project"},
-     *   summary="Hapus anggota dari proyek",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="projectId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Parameter(name="id",        in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="Anggota dihapus")
-     * )
-     */
-    public function destroy(Request $request, string $projectId, string $id): JsonResponse
-    {
-        $member = ProjectMember::where('project_id', $projectId)->find($id);
-        if (! $member) return $this->notFound('Member');
+//     /**
+//      * @OA\Delete(
+//      *   path="/projects/{projectId}/members/{id}",
+//      *   tags={"Project"},
+//      *   summary="Hapus anggota dari proyek",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="projectId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Parameter(name="id",        in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="Anggota dihapus")
+//      * )
+//      */
+//     public function destroy(Request $request, string $projectId, string $id): JsonResponse
+//     {
+//         $member = ProjectMember::where('project_id', $projectId)->find($id);
+//         if (! $member) return $this->notFound('Member');
 
-        // Tidak boleh hapus project manager
-        if ($member->role === ProjectMember::ROLE_MANAGER) {
-            $project = Project::find($projectId);
-            if ($project && $project->manager_id === $member->user_id) {
-                return $this->error(
-                    'Tidak dapat menghapus Project Manager dari tim. Ganti manager proyek terlebih dahulu.',
-                    422, 'CANNOT_REMOVE_MANAGER'
-                );
-            }
-        }
+//         // Tidak boleh hapus project manager
+//         if ($member->role === ProjectMember::ROLE_MANAGER) {
+//             $project = Project::find($projectId);
+//             if ($project && $project->manager_id === $member->user_id) {
+//                 return $this->error(
+//                     'Tidak dapat menghapus Project Manager dari tim. Ganti manager proyek terlebih dahulu.',
+//                     422, 'CANNOT_REMOVE_MANAGER'
+//                 );
+//             }
+//         }
 
-        $member->delete();
-        return $this->ok(null, 'Anggota berhasil dihapus dari proyek.');
-    }
-}
+//         $member->delete();
+//         return $this->ok(null, 'Anggota berhasil dihapus dari proyek.');
+//     }
+// }

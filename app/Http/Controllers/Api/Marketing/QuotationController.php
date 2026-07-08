@@ -405,293 +405,293 @@ class QuotationController extends BaseController
 // ══════════════════════════════════════════════════════════
 // ClientController
 // ══════════════════════════════════════════════════════════
-class ClientController extends BaseController
-{
-    /**
-     * @OA\Get(
-     *   path="/marketing/clients",
-     *   tags={"Marketing"},
-     *   summary="Daftar klien",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="search",      in="query", @OA\Schema(type="string")),
-     *   @OA\Parameter(name="segment",     in="query", @OA\Schema(type="string")),
-     *   @OA\Parameter(name="assigned_to", in="query", @OA\Schema(type="string", format="uuid")),
-     *   @OA\Parameter(name="is_active",   in="query", @OA\Schema(type="boolean")),
-     *   @OA\Parameter(name="per_page",    in="query", @OA\Schema(type="integer", default=20)),
-     *   @OA\Response(response=200, description="OK",
-     *     @OA\JsonContent(@OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ClientResource")))
-     *   )
-     * )
-     */
-    public function index(Request $request): JsonResponse
-    {
-        $clients = Client::with(['contacts', 'assignedTo'])
-            ->when($request->search, fn($q) =>
-                $q->where(fn($q) =>
-                    $q->where('name', 'like', "%{$request->search}%")
-                      ->orWhere('client_number', 'like', "%{$request->search}%")
-                      ->orWhere('email', 'like', "%{$request->search}%")
-                )
-            )
-            ->when($request->segment,     fn($q) => $q->where('segment', $request->segment))
-            ->when($request->assigned_to, fn($q) => $q->where('assigned_to', $request->assigned_to))
-            ->when($request->has('is_active'), fn($q) =>
-                $q->where('is_active', filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN))
-            )
-            ->orderBy('name')
-            ->paginate($request->per_page ?? 20);
+// class ClientController extends BaseController
+// {
+//     /**
+//      * @OA\Get(
+//      *   path="/marketing/clients",
+//      *   tags={"Marketing"},
+//      *   summary="Daftar klien",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="search",      in="query", @OA\Schema(type="string")),
+//      *   @OA\Parameter(name="segment",     in="query", @OA\Schema(type="string")),
+//      *   @OA\Parameter(name="assigned_to", in="query", @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Parameter(name="is_active",   in="query", @OA\Schema(type="boolean")),
+//      *   @OA\Parameter(name="per_page",    in="query", @OA\Schema(type="integer", default=20)),
+//      *   @OA\Response(response=200, description="OK",
+//      *     @OA\JsonContent(@OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ClientResource")))
+//      *   )
+//      * )
+//      */
+//     public function index(Request $request): JsonResponse
+//     {
+//         $clients = Client::with(['contacts', 'assignedTo'])
+//             ->when($request->search, fn($q) =>
+//                 $q->where(fn($q) =>
+//                     $q->where('name', 'like', "%{$request->search}%")
+//                       ->orWhere('client_number', 'like', "%{$request->search}%")
+//                       ->orWhere('email', 'like', "%{$request->search}%")
+//                 )
+//             )
+//             ->when($request->segment,     fn($q) => $q->where('segment', $request->segment))
+//             ->when($request->assigned_to, fn($q) => $q->where('assigned_to', $request->assigned_to))
+//             ->when($request->has('is_active'), fn($q) =>
+//                 $q->where('is_active', filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN))
+//             )
+//             ->orderBy('name')
+//             ->paginate($request->per_page ?? 20);
 
-        return $this->paginated($clients, ClientResource::class);
-    }
+//         return $this->paginated($clients, ClientResource::class);
+//     }
 
-    /**
-     * @OA\Post(
-     *   path="/marketing/clients",
-     *   tags={"Marketing"},
-     *   summary="Tambah klien baru",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\RequestBody(required=true,
-     *     @OA\JsonContent(
-     *       required={"name"},
-     *       @OA\Property(property="type",        type="string", enum={"individual","company"}, default="company"),
-     *       @OA\Property(property="name",        type="string"),
-     *       @OA\Property(property="email",       type="string", format="email", nullable=true),
-     *       @OA\Property(property="phone",       type="string", nullable=true),
-     *       @OA\Property(property="address",     type="string", nullable=true),
-     *       @OA\Property(property="city",        type="string", nullable=true),
-     *       @OA\Property(property="npwp",        type="string", nullable=true),
-     *       @OA\Property(property="segment",     type="string", nullable=true),
-     *       @OA\Property(property="assigned_to", type="string", format="uuid", nullable=true)
-     *     )
-     *   ),
-     *   @OA\Response(response=201, description="Klien berhasil ditambahkan")
-     * )
-     */
-    public function store(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'type'        => ['sometimes', 'in:individual,company'],
-            'name'        => ['required', 'string', 'max:255'],
-            'alias'       => ['nullable', 'string', 'max:100'],
-            'email'       => ['nullable', 'email', 'max:255'],
-            'phone'       => ['nullable', 'string', 'max:30'],
-            'address'     => ['nullable', 'string', 'max:500'],
-            'city'        => ['nullable', 'string', 'max:100'],
-            'province'    => ['nullable', 'string', 'max:100'],
-            'postal_code' => ['nullable', 'string', 'max:10'],
-            'country'     => ['nullable', 'string', 'max:100'],
-            'npwp'        => ['nullable', 'string', 'max:30'],
-            'website'     => ['nullable', 'url', 'max:255'],
-            'segment'     => ['nullable', 'string', 'max:50'],
-            'tags'        => ['nullable', 'array'],
-            'assigned_to' => ['nullable', 'uuid', 'exists:users,id'],
-            'notes'       => ['nullable', 'string'],
-        ]);
+//     /**
+//      * @OA\Post(
+//      *   path="/marketing/clients",
+//      *   tags={"Marketing"},
+//      *   summary="Tambah klien baru",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\RequestBody(required=true,
+//      *     @OA\JsonContent(
+//      *       required={"name"},
+//      *       @OA\Property(property="type",        type="string", enum={"individual","company"}, default="company"),
+//      *       @OA\Property(property="name",        type="string"),
+//      *       @OA\Property(property="email",       type="string", format="email", nullable=true),
+//      *       @OA\Property(property="phone",       type="string", nullable=true),
+//      *       @OA\Property(property="address",     type="string", nullable=true),
+//      *       @OA\Property(property="city",        type="string", nullable=true),
+//      *       @OA\Property(property="npwp",        type="string", nullable=true),
+//      *       @OA\Property(property="segment",     type="string", nullable=true),
+//      *       @OA\Property(property="assigned_to", type="string", format="uuid", nullable=true)
+//      *     )
+//      *   ),
+//      *   @OA\Response(response=201, description="Klien berhasil ditambahkan")
+//      * )
+//      */
+//     public function store(Request $request): JsonResponse
+//     {
+//         $validated = $request->validate([
+//             'type'        => ['sometimes', 'in:individual,company'],
+//             'name'        => ['required', 'string', 'max:255'],
+//             'alias'       => ['nullable', 'string', 'max:100'],
+//             'email'       => ['nullable', 'email', 'max:255'],
+//             'phone'       => ['nullable', 'string', 'max:30'],
+//             'address'     => ['nullable', 'string', 'max:500'],
+//             'city'        => ['nullable', 'string', 'max:100'],
+//             'province'    => ['nullable', 'string', 'max:100'],
+//             'postal_code' => ['nullable', 'string', 'max:10'],
+//             'country'     => ['nullable', 'string', 'max:100'],
+//             'npwp'        => ['nullable', 'string', 'max:30'],
+//             'website'     => ['nullable', 'url', 'max:255'],
+//             'segment'     => ['nullable', 'string', 'max:50'],
+//             'tags'        => ['nullable', 'array'],
+//             'assigned_to' => ['nullable', 'uuid', 'exists:users,id'],
+//             'notes'       => ['nullable', 'string'],
+//         ]);
 
-        $client = Client::create(array_merge($validated, [
-            'tenant_id' => $request->user()->tenant_id,
-            'is_active' => true,
-        ]));
+//         $client = Client::create(array_merge($validated, [
+//             'tenant_id' => $request->user()->tenant_id,
+//             'is_active' => true,
+//         ]));
 
-        return $this->created(
-            new ClientResource($client->load(['contacts', 'assignedTo'])),
-            'Klien berhasil ditambahkan.'
-        );
-    }
+//         return $this->created(
+//             new ClientResource($client->load(['contacts', 'assignedTo'])),
+//             'Klien berhasil ditambahkan.'
+//         );
+//     }
 
-    /**
-     * @OA\Get(
-     *   path="/marketing/clients/{id}",
-     *   tags={"Marketing"},
-     *   summary="Detail klien",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="OK",
-     *     @OA\JsonContent(@OA\Property(property="data", ref="#/components/schemas/ClientResource"))
-     *   )
-     * )
-     */
-    public function show(string $id): JsonResponse
-    {
-        $client = Client::with(['contacts', 'assignedTo', 'sourceLead'])->find($id);
-        if (! $client) return $this->notFound('Klien');
-        return $this->ok(new ClientResource($client));
-    }
+//     /**
+//      * @OA\Get(
+//      *   path="/marketing/clients/{id}",
+//      *   tags={"Marketing"},
+//      *   summary="Detail klien",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="OK",
+//      *     @OA\JsonContent(@OA\Property(property="data", ref="#/components/schemas/ClientResource"))
+//      *   )
+//      * )
+//      */
+//     public function show(string $id): JsonResponse
+//     {
+//         $client = Client::with(['contacts', 'assignedTo', 'sourceLead'])->find($id);
+//         if (! $client) return $this->notFound('Klien');
+//         return $this->ok(new ClientResource($client));
+//     }
 
-    /**
-     * @OA\Patch(
-     *   path="/marketing/clients/{id}",
-     *   tags={"Marketing"},
-     *   summary="Update data klien",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="OK")
-     * )
-     */
-    public function update(Request $request, string $id): JsonResponse
-    {
-        $client = Client::find($id);
-        if (! $client) return $this->notFound('Klien');
+//     /**
+//      * @OA\Patch(
+//      *   path="/marketing/clients/{id}",
+//      *   tags={"Marketing"},
+//      *   summary="Update data klien",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="OK")
+//      * )
+//      */
+//     public function update(Request $request, string $id): JsonResponse
+//     {
+//         $client = Client::find($id);
+//         if (! $client) return $this->notFound('Klien');
 
-        $validated = $request->validate([
-            'name'        => ['sometimes', 'string', 'max:255'],
-            'alias'       => ['sometimes', 'nullable', 'string'],
-            'email'       => ['sometimes', 'nullable', 'email'],
-            'phone'       => ['sometimes', 'nullable', 'string', 'max:30'],
-            'address'     => ['sometimes', 'nullable', 'string'],
-            'city'        => ['sometimes', 'nullable', 'string'],
-            'npwp'        => ['sometimes', 'nullable', 'string'],
-            'segment'     => ['sometimes', 'nullable', 'string'],
-            'tags'        => ['sometimes', 'nullable', 'array'],
-            'assigned_to' => ['sometimes', 'nullable', 'uuid'],
-            'notes'       => ['sometimes', 'nullable', 'string'],
-            'is_active'   => ['sometimes', 'boolean'],
-        ]);
+//         $validated = $request->validate([
+//             'name'        => ['sometimes', 'string', 'max:255'],
+//             'alias'       => ['sometimes', 'nullable', 'string'],
+//             'email'       => ['sometimes', 'nullable', 'email'],
+//             'phone'       => ['sometimes', 'nullable', 'string', 'max:30'],
+//             'address'     => ['sometimes', 'nullable', 'string'],
+//             'city'        => ['sometimes', 'nullable', 'string'],
+//             'npwp'        => ['sometimes', 'nullable', 'string'],
+//             'segment'     => ['sometimes', 'nullable', 'string'],
+//             'tags'        => ['sometimes', 'nullable', 'array'],
+//             'assigned_to' => ['sometimes', 'nullable', 'uuid'],
+//             'notes'       => ['sometimes', 'nullable', 'string'],
+//             'is_active'   => ['sometimes', 'boolean'],
+//         ]);
 
-        $client->update($validated);
-        return $this->ok(new ClientResource($client->load('contacts')), 'Data klien berhasil diperbarui.');
-    }
+//         $client->update($validated);
+//         return $this->ok(new ClientResource($client->load('contacts')), 'Data klien berhasil diperbarui.');
+//     }
 
-    /**
-     * @OA\Delete(
-     *   path="/marketing/clients/{id}",
-     *   tags={"Marketing"},
-     *   summary="Nonaktifkan klien",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="Klien dinonaktifkan")
-     * )
-     */
-    public function destroy(string $id): JsonResponse
-    {
-        $client = Client::find($id);
-        if (! $client) return $this->notFound('Klien');
+//     /**
+//      * @OA\Delete(
+//      *   path="/marketing/clients/{id}",
+//      *   tags={"Marketing"},
+//      *   summary="Nonaktifkan klien",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="Klien dinonaktifkan")
+//      * )
+//      */
+//     public function destroy(string $id): JsonResponse
+//     {
+//         $client = Client::find($id);
+//         if (! $client) return $this->notFound('Klien');
 
-        $client->update(['is_active' => false]);
-        $client->delete();
-        return $this->ok(null, 'Klien berhasil dinonaktifkan.');
-    }
+//         $client->update(['is_active' => false]);
+//         $client->delete();
+//         return $this->ok(null, 'Klien berhasil dinonaktifkan.');
+//     }
 
-    /**
-     * @OA\Get(
-     *   path="/marketing/clients/{id}/transactions",
-     *   tags={"Marketing"},
-     *   summary="Riwayat transaksi klien (quotation, invoice, proyek)",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="OK",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="data", type="object",
-     *         @OA\Property(property="summary",    type="object"),
-     *         @OA\Property(property="quotations", type="array", @OA\Items(type="object")),
-     *         @OA\Property(property="invoices",   type="array", @OA\Items(type="object")),
-     *         @OA\Property(property="projects",   type="array", @OA\Items(type="object"))
-     *       )
-     *     )
-     *   )
-     * )
-     */
-    public function transactions(string $id): JsonResponse
-    {
-        $client = Client::find($id);
-        if (! $client) return $this->notFound('Klien');
+//     /**
+//      * @OA\Get(
+//      *   path="/marketing/clients/{id}/transactions",
+//      *   tags={"Marketing"},
+//      *   summary="Riwayat transaksi klien (quotation, invoice, proyek)",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="OK",
+//      *     @OA\JsonContent(
+//      *       @OA\Property(property="data", type="object",
+//      *         @OA\Property(property="summary",    type="object"),
+//      *         @OA\Property(property="quotations", type="array", @OA\Items(type="object")),
+//      *         @OA\Property(property="invoices",   type="array", @OA\Items(type="object")),
+//      *         @OA\Property(property="projects",   type="array", @OA\Items(type="object"))
+//      *       )
+//      *     )
+//      *   )
+//      * )
+//      */
+//     public function transactions(string $id): JsonResponse
+//     {
+//         $client = Client::find($id);
+//         if (! $client) return $this->notFound('Klien');
 
-        $invoices   = Invoice::where('client_id', $id)->latest('invoice_date')->limit(10)->get();
-        $quotations = Quotation::where('client_id', $id)->latest('date')->limit(10)->get();
-        $projects   = \App\Models\Project::where('client_id', $id)->latest()->limit(10)->get();
+//         $invoices   = Invoice::where('client_id', $id)->latest('invoice_date')->limit(10)->get();
+//         $quotations = Quotation::where('client_id', $id)->latest('date')->limit(10)->get();
+//         $projects   = \App\Models\Project::where('client_id', $id)->latest()->limit(10)->get();
 
-        return $this->ok([
-            'summary' => [
-                'total_quotations'     => Quotation::where('client_id', $id)->count(),
-                'total_invoices'       => Invoice::where('client_id', $id)->count(),
-                'total_revenue'        => (float) Invoice::where('client_id', $id)->where('status', 'paid')->sum('total_amount'),
-                'outstanding_balance'  => (float) Invoice::where('client_id', $id)->whereNotIn('status', ['paid', 'cancelled', 'void'])->sum('remaining_amount'),
-                'active_projects'      => \App\Models\Project::where('client_id', $id)->where('status', 'in_progress')->count(),
-            ],
-            'quotations' => $quotations->map(fn($q) => [
-                'id'               => $q->id,
-                'quotation_number' => $q->quotation_number,
-                'date'             => $q->date?->toDateString(),
-                'total_amount'     => (float) $q->total_amount,
-                'status'           => $q->status,
-            ]),
-            'invoices' => $invoices->map(fn($inv) => [
-                'id'             => $inv->id,
-                'invoice_number' => $inv->invoice_number,
-                'invoice_date'   => $inv->invoice_date?->toDateString(),
-                'due_date'       => $inv->due_date?->toDateString(),
-                'total_amount'   => (float) $inv->total_amount,
-                'paid_amount'    => (float) $inv->paid_amount,
-                'status'         => $inv->status,
-            ]),
-            'projects' => $projects->map(fn($p) => [
-                'id'             => $p->id,
-                'project_number' => $p->project_number,
-                'name'           => $p->name,
-                'status'         => $p->status,
-                'progress'       => $p->progress_percent,
-            ]),
-        ]);
-    }
-}
+//         return $this->ok([
+//             'summary' => [
+//                 'total_quotations'     => Quotation::where('client_id', $id)->count(),
+//                 'total_invoices'       => Invoice::where('client_id', $id)->count(),
+//                 'total_revenue'        => (float) Invoice::where('client_id', $id)->where('status', 'paid')->sum('total_amount'),
+//                 'outstanding_balance'  => (float) Invoice::where('client_id', $id)->whereNotIn('status', ['paid', 'cancelled', 'void'])->sum('remaining_amount'),
+//                 'active_projects'      => \App\Models\Project::where('client_id', $id)->where('status', 'in_progress')->count(),
+//             ],
+//             'quotations' => $quotations->map(fn($q) => [
+//                 'id'               => $q->id,
+//                 'quotation_number' => $q->quotation_number,
+//                 'date'             => $q->date?->toDateString(),
+//                 'total_amount'     => (float) $q->total_amount,
+//                 'status'           => $q->status,
+//             ]),
+//             'invoices' => $invoices->map(fn($inv) => [
+//                 'id'             => $inv->id,
+//                 'invoice_number' => $inv->invoice_number,
+//                 'invoice_date'   => $inv->invoice_date?->toDateString(),
+//                 'due_date'       => $inv->due_date?->toDateString(),
+//                 'total_amount'   => (float) $inv->total_amount,
+//                 'paid_amount'    => (float) $inv->paid_amount,
+//                 'status'         => $inv->status,
+//             ]),
+//             'projects' => $projects->map(fn($p) => [
+//                 'id'             => $p->id,
+//                 'project_number' => $p->project_number,
+//                 'name'           => $p->name,
+//                 'status'         => $p->status,
+//                 'progress'       => $p->progress_percent,
+//             ]),
+//         ]);
+//     }
+// }
 
-// ══════════════════════════════════════════════════════════
-// ClientContactController
-// ══════════════════════════════════════════════════════════
-class ClientContactController extends BaseController
-{
-    /** @OA\Get(path="/marketing/clients/{clientId}/contacts", tags={"Marketing"}, summary="Daftar contact person klien", security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="clientId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="OK")
-     * )
-     */
-    public function index(string $clientId): JsonResponse
-    {
-        $contacts = ClientContact::where('client_id', $clientId)->orderByDesc('is_primary')->get();
-        return $this->ok($contacts->map(fn($c) => ['id'=>$c->id,'name'=>$c->name,'position'=>$c->position,'email'=>$c->email,'phone'=>$c->phone,'is_primary'=>$c->is_primary,'notes'=>$c->notes]));
-    }
+// // ══════════════════════════════════════════════════════════
+// // ClientContactController
+// // ══════════════════════════════════════════════════════════
+// class ClientContactController extends BaseController
+// {
+//     /** @OA\Get(path="/marketing/clients/{clientId}/contacts", tags={"Marketing"}, summary="Daftar contact person klien", security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="clientId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\Response(response=200, description="OK")
+//      * )
+//      */
+//     public function index(string $clientId): JsonResponse
+//     {
+//         $contacts = ClientContact::where('client_id', $clientId)->orderByDesc('is_primary')->get();
+//         return $this->ok($contacts->map(fn($c) => ['id'=>$c->id,'name'=>$c->name,'position'=>$c->position,'email'=>$c->email,'phone'=>$c->phone,'is_primary'=>$c->is_primary,'notes'=>$c->notes]));
+//     }
 
-    /** @OA\Post(path="/marketing/clients/{clientId}/contacts", tags={"Marketing"}, summary="Tambah contact person", security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="clientId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\RequestBody(required=true, @OA\JsonContent(required={"name"}, @OA\Property(property="name",type="string"), @OA\Property(property="position",type="string",nullable=true), @OA\Property(property="email",type="string",nullable=true), @OA\Property(property="phone",type="string",nullable=true), @OA\Property(property="is_primary",type="boolean"))),
-     *   @OA\Response(response=201, description="Contact ditambahkan")
-     * )
-     */
-    public function store(Request $request, string $clientId): JsonResponse
-    {
-        $client = Client::find($clientId);
-        if (! $client) return $this->notFound('Klien');
+//     /** @OA\Post(path="/marketing/clients/{clientId}/contacts", tags={"Marketing"}, summary="Tambah contact person", security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="clientId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+//      *   @OA\RequestBody(required=true, @OA\JsonContent(required={"name"}, @OA\Property(property="name",type="string"), @OA\Property(property="position",type="string",nullable=true), @OA\Property(property="email",type="string",nullable=true), @OA\Property(property="phone",type="string",nullable=true), @OA\Property(property="is_primary",type="boolean"))),
+//      *   @OA\Response(response=201, description="Contact ditambahkan")
+//      * )
+//      */
+//     public function store(Request $request, string $clientId): JsonResponse
+//     {
+//         $client = Client::find($clientId);
+//         if (! $client) return $this->notFound('Klien');
 
-        $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:255'],
-            'position'   => ['nullable', 'string', 'max:100'],
-            'email'      => ['nullable', 'email', 'max:255'],
-            'phone'      => ['nullable', 'string', 'max:30'],
-            'is_primary' => ['sometimes', 'boolean'],
-            'notes'      => ['nullable', 'string'],
-        ]);
+//         $validated = $request->validate([
+//             'name'       => ['required', 'string', 'max:255'],
+//             'position'   => ['nullable', 'string', 'max:100'],
+//             'email'      => ['nullable', 'email', 'max:255'],
+//             'phone'      => ['nullable', 'string', 'max:30'],
+//             'is_primary' => ['sometimes', 'boolean'],
+//             'notes'      => ['nullable', 'string'],
+//         ]);
 
-        // Jika set as primary, reset yang lain
-        if ($validated['is_primary'] ?? false) {
-            ClientContact::where('client_id', $clientId)->update(['is_primary' => false]);
-        }
+//         // Jika set as primary, reset yang lain
+//         if ($validated['is_primary'] ?? false) {
+//             ClientContact::where('client_id', $clientId)->update(['is_primary' => false]);
+//         }
 
-        $contact = $client->contacts()->create($validated);
-        return $this->created(['id'=>$contact->id,'name'=>$contact->name], 'Contact person berhasil ditambahkan.');
-    }
+//         $contact = $client->contacts()->create($validated);
+//         return $this->created(['id'=>$contact->id,'name'=>$contact->name], 'Contact person berhasil ditambahkan.');
+//     }
 
-    /** @OA\Delete(path="/marketing/clients/{clientId}/contacts/{id}", tags={"Marketing"}, summary="Hapus contact person",
-     *   security={{"bearerAuth":{}}},
-     *   @OA\Parameter(name="clientId",in="path",required=true,@OA\Schema(type="string",format="uuid")),
-     *   @OA\Parameter(name="id",in="path",required=true,@OA\Schema(type="string",format="uuid")),
-     *   @OA\Response(response=200, description="Contact dihapus")
-     * )
-     */
-    public function destroy(string $clientId, string $id): JsonResponse
-    {
-        $contact = ClientContact::where('client_id', $clientId)->find($id);
-        if (! $contact) return $this->notFound('Contact person');
-        $contact->delete();
-        return $this->ok(null, 'Contact person berhasil dihapus.');
-    }
-}
+//     /** @OA\Delete(path="/marketing/clients/{clientId}/contacts/{id}", tags={"Marketing"}, summary="Hapus contact person",
+//      *   security={{"bearerAuth":{}}},
+//      *   @OA\Parameter(name="clientId",in="path",required=true,@OA\Schema(type="string",format="uuid")),
+//      *   @OA\Parameter(name="id",in="path",required=true,@OA\Schema(type="string",format="uuid")),
+//      *   @OA\Response(response=200, description="Contact dihapus")
+//      * )
+//      */
+//     public function destroy(string $clientId, string $id): JsonResponse
+//     {
+//         $contact = ClientContact::where('client_id', $clientId)->find($id);
+//         if (! $contact) return $this->notFound('Contact person');
+//         $contact->delete();
+//         return $this->ok(null, 'Contact person berhasil dihapus.');
+//     }
+// }
