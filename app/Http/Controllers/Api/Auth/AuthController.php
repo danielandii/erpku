@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
+use OpenApi\Annotations as OA;   // <-- this is critical
 
 class AuthController extends BaseController
 {
